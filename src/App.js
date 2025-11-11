@@ -22,6 +22,7 @@ import ViewMarks from './pages/marks/ViewMarks'
 import PrincipalOverview from './pages/marks/PrincipalOverview';
 import DepartmentAnalysis from './pages/marks/DepartmentAnalysis';
 import TopPerformers from './pages/marks/TopPerformers';
+import NetworkAlert from './components/NetworkAlert';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -46,6 +47,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 relative">
+      <NetworkAlert />
       <Header
         user={user}
         onLogin={handleLogin}
