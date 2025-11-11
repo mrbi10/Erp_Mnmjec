@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {BASE_URL} from "../constants/API";
+import { BASE_URL } from "../constants/API";
 
 export default function NetworkAlert() {
   const [show, setShow] = useState(false);
@@ -7,10 +7,15 @@ export default function NetworkAlert() {
   useEffect(() => {
     const checkServer = async () => {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
         const res = await fetch(`${BASE_URL}/status`, {
           method: "GET",
-          timeout: 3000, 
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
         if (!res.ok) throw new Error("Bad response");
         setShow(false);
       } catch {
@@ -18,7 +23,6 @@ export default function NetworkAlert() {
       }
     };
 
-    // initial check + interval every 10s
     checkServer();
     const interval = setInterval(checkServer, 10000);
     return () => clearInterval(interval);
@@ -27,31 +31,25 @@ export default function NetworkAlert() {
   if (!show) return null;
 
   return (
-    <div style={popupStyle}>
-      <div style={contentStyle}>
-        <h4 style={{ marginBottom: 6 }}>Server Unreachable</h4>
-        <p style={{ margin: 0, fontSize: 14 }}>
-          Connect to the <strong>college Wi-Fi</strong> to access this page.
+    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-[9999] animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-[90%] p-8 text-center border-t-4 border-red-600">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+          Uh-oh! Please connect to the MNM-JEC Wi-Fi
+        </h2>
+        <p className="text-gray-600 text-[15px] leading-relaxed mb-6">
+          This ERP system is accessible only within the{" "}
+          <span className="font-semibold text-gray-800">
+            MNM Jain Engineering College
+          </span>{" "}
+          campus network.
         </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2 rounded-lg transition-all duration-200"
+        >
+          Retry
+        </button>
       </div>
     </div>
   );
 }
-
-const popupStyle = {
-  position: "fixed",
-  bottom: "20px",
-  right: "20px",
-  background: "#f44336",
-  color: "#fff",
-  padding: "12px 16px",
-  borderRadius: "8px",
-  boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
-  zIndex: 10000,
-  transition: "all 0.3s ease",
-};
-
-const contentStyle = {
-  display: "flex",
-  flexDirection: "column",
-};
