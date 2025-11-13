@@ -7,4 +7,6 @@
 // home
 // export const BASE_URL = "http://192.168.29.235:5000/api";
 // pati home
-export const BASE_URL = "http://192.168.1.11:5000/api";
+// export const BASE_URL = "http://192.168.1.11:5000/api";
+// Mrbi hotspot
+export const BASE_URL = "http://10.157.240.226:5000/api";
