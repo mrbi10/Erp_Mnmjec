@@ -29,49 +29,55 @@ export default function Sidebar({ role, open, onClose }) {
 
   const links = [
     {
-      key: '/dashboard',
+      key: '/Erp_Mnmjec/dashboard',
       label: 'Dashboard',
       icon: <DashboardOutlined />,
       roles: ['Staff', 'student', 'CA', 'HOD', 'Principal'],
     },
     {
-      key: '/students',
+      key: '/Erp_Mnmjec/students',
       label: 'Students',
       icon: <UserOutlined />,
       roles: ['CA', 'HOD', 'Principal'],
     },
     {
-      key: '/faculty',
+      key: '/Erp_Mnmjec/faculty',
       label: 'faculty',
       icon: <UserOutlined />,
       roles: ['HOD', 'Principal'],
     },
     {
-      key: '/attendance',
+      key: '/Erp_Mnmjec/attendance',
       label: 'Attendance',
       icon: <CheckSquareOutlined />,
       roles: ['Staff', 'student', 'CA', 'HOD'],
     },
     {
-      key: '/marks',
+      key: '/Erp_Mnmjec/marks',
       label: 'Marks',
       icon: <CheckSquareOutlined />,
       roles: ['Staff', 'Principal', 'student','CA', 'HOD'],
     },
+      {
+      key: '/Erp_Mnmjec/fees',
+      label: 'Fees',
+      icon: <CheckSquareOutlined />,
+      roles: ['Staff', 'Principal', 'student','CA', 'HOD'],
+    },
     {
-      key: '/late',
+      key: '/Erp_Mnmjec/late',
       label: 'Late arrival',
       icon: <FileTextOutlined />,
       roles: ['CA', 'HOD', 'Principal'],
     },
     {
-      key: '/reports',
+      key: '/Erp_Mnmjec/reports',
       label: 'Reports',
       icon: <FileTextOutlined />,
       roles: ['CA', 'HOD', 'Principal'],
     },
     {
-      key: '/SecurityLateEntry',
+      key: '/Erp_Mnmjec/SecurityLateEntry',
       label: 'SecurityLateEntry',
       icon: <FileTextOutlined />,
       roles: ['Security'],

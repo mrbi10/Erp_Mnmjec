@@ -76,28 +76,24 @@ export default function PremiumHeader({ user, onLogin, onLogout, onMenuClick, on
             icon={<ArrowLeftOutlined style={{ fontSize: 18, color: '#fff' }} />}
             onClick={handleBackClick}
             style={{
-              display: location.pathname === '/' ? 'none' : 'flex', 
+              display: location.pathname === '/' ? 'none' : 'flex',
               alignItems: 'center',
               color: '#fff',
               fontWeight: 600,
             }}
           >
-            
+
           </Button>
 
-          <Button
-            type="text"
-            icon={<MenuOutlined style={{ fontSize: 20, color: '#fff' }} />}
-            onClick={onHamburgerClick}
-          />
 
-          {/* <Link to="/">
+
+          <Link to="/Erp_Mnmjec/home">
             <img
               src={logo}
               alt="MNMJEC ERP Logo"
-              style={{ height: 40, width: "100%", cursor: 'pointer', backgroundColor: '#fff', borderRadius: 8, padding: 4 }}
+              style={{ height: 40, width: "100%", cursor: 'pointer', backgroundColor: '#fff', padding: 4 }}
             />
-          </Link> */}
+          </Link>
           {/* <Link to="/">
             <img
               src={logo}
@@ -106,7 +102,17 @@ export default function PremiumHeader({ user, onLogin, onLogout, onMenuClick, on
             />
           </Link> */}
 
-          <span style={{ fontWeight: 700, fontSize: 22, color: '#fff' }}>MNMJEC </span>
+          <Link to="/Erp_Mnmjec/home" style={{ textDecoration: 'none' }}>
+            <span style={{ fontWeight: 700, fontSize: 22, color: '#fff', cursor: 'pointer' }}>
+              MNMJEC
+            </span>
+          </Link>
+          <Button
+            type="text"
+            icon={<MenuOutlined style={{ fontSize: 20, color: '#fff' }} />}
+            onClick={onHamburgerClick}
+            onMouseEnter={onHamburgerClick}
+          />
 
         </div>
 

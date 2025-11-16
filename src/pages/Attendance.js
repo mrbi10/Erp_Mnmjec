@@ -7,7 +7,7 @@ export default function Attendance({ user }) {
     const location = useLocation();
 
     // Base paths for navigation
-    const basePath = "/attendance";
+    const basePath = "/Erp_Mnmjec/attendance";
 
     // --- Role-Based Options Definition with Enhanced Styling Data ---
     const options = [];
@@ -24,9 +24,9 @@ export default function Attendance({ user }) {
 
     if (user.role === 'HOD') {
         options.push(
-            { label: 'View All Reports', page: 'reports', icon: <FaClipboardList className="text-blue-500" /> , description: "Access comprehensive attendance reports across departments."},
-            { label: 'Manage Staff & CAs', page: 'manage', icon: <FaUsersCog className="text-purple-500" />, description: "Manage teaching loads and assign course advisors."},
-            { label: 'My Subject Reports', page: 'reports/my-subjects', icon: <FaClipboardList className="text-teal-500" />, description: "Review attendance for the subjects you personally teach."}
+            { label: 'View All Reports', page: 'reports', icon: <FaClipboardList className="text-blue-500" />, description: "Access comprehensive attendance reports across departments." },
+            { label: 'Manage Staff & CAs', page: 'manage', icon: <FaUsersCog className="text-purple-500" />, description: "Manage teaching loads and assign course advisors." },
+            { label: 'My Subject Reports', page: 'reports/my-subjects', icon: <FaClipboardList className="text-teal-500" />, description: "Review attendance for the subjects you personally teach." }
         );
     } else if (user.role === 'CA') {
         options.push(
@@ -51,7 +51,7 @@ export default function Attendance({ user }) {
 
     return (
         <div className="p-4 sm:p-8 min-h-screen bg-gray-50">
-            
+
             {showHeader && (
                 <div className="bg-white p-6 rounded-xl shadow-2xl border-t-8 border-sky-500 mb-8">
                     {/* Rich Header */}
@@ -63,7 +63,7 @@ export default function Attendance({ user }) {
                             {roleStyle.label} Portal
                         </div>
                     </div>
-                    
+
                     <p className="text-lg text-gray-600 mb-6">
                         Welcome, <span className="font-bold text-sky-800">{user.name}</span>. Select an action below to manage or view attendance records.
                     </p>
@@ -71,8 +71,8 @@ export default function Attendance({ user }) {
                     {/* Enhanced Options Grid */}
                     <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                         {options.map((opt, idx) => (
-                            <div 
-                                key={idx} 
+                            <div
+                                key={idx}
                                 onClick={() => navigate(`${basePath}/${opt.page}`)}
                                 className="bg-white p-6 shadow-xl rounded-xl cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl border-l-4 border-sky-400 hover:border-sky-600"
                             >

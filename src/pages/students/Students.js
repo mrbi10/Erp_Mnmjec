@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { FaSpinner, FaUserGraduate, FaSearch } from "react-icons/fa";
 import Select from "react-select";
 import { BASE_URL } from "../../constants/API";
 import Swal from "sweetalert2";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 
 
 const DEPT_MAP = {
@@ -32,19 +32,36 @@ export default function Students({ user }) {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedClass] = useState("");
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState({ multiFilters: [] });
+  const [filters, setFilters] = useState({
+    dept: "",
+    year: "",
+    classId: "",
+    multiFilters: []
+  });
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 7;
-
-
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newStudent, setNewStudent] = useState({
+    name: "",
+    roll_no: "",
+    email: "",
+    mobile: "",
+    class_id: "",
+    dept_id: "",
+    jain: false,
+    hostel: false,
+    bus: false,
+  });
+  const [adding, setAdding] = useState(false);
   const token = localStorage.getItem("token");
-
   const [editingStudent, setEditingStudent] = useState(null);
   const [editForm, setEditForm] = useState({ jain: false, hostel: false, bus: false });
   const [saving, setSaving] = useState(false);
+
+
 
   const handleEdit = (student) => {
     setEditingStudent(student);
@@ -54,6 +71,137 @@ export default function Students({ user }) {
       bus: !!student.bus,
     });
   };
+
+  const handleDelete = async (student) => {
+    const confirm = await Swal.fire({
+      title: `Delete ${student.name}?`,
+      text: "This will permanently remove the student.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      customClass: {
+        confirmButton: "bg-red-600 text-white px-4 py-2 rounded",
+        cancelButton: "bg-gray-200 px-4 py-2 rounded ml-2",
+      },
+      buttonsStyling: false,
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await fetch(`${BASE_URL}/student/${student.student_id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      Swal.fire({
+        title: "Deleted!",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setStudents(prev => prev.filter(st => st.student_id !== student.student_id));
+    } catch (err) {
+      Swal.fire("Error", "Something went wrong.", "error");
+    }
+  };
+
+  const handleAddStudent = async () => {
+    try {
+      setAdding(true);
+
+      let finalDept = newStudent.dept_id;
+      let finalClass = newStudent.class_id;
+
+      if (user.role === "HOD") {
+        finalDept = user.dept_id;
+      }
+
+      if (user.role === "CA") {
+        finalDept = user.dept_id;
+        finalClass = user.assigned_class_id;
+      }
+
+      const formattedStudent = {
+        ...newStudent,
+        name: newStudent.name.trim().toUpperCase(),
+        dept_id: finalDept,
+        class_id: finalClass
+      };
+
+      const res = await fetch(`${BASE_URL}/student`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formattedStudent),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        if (data.code === "DUPLICATE") {
+          const ex = data.existingStudent;
+          return Swal.fire({
+            title: "Student Already Exists",
+            html: `
+            <div class="text-left leading-relaxed">
+              <p class="text-gray-700 mb-3">
+                A student with the same <b>email</b> or <b>register number</b> already exists.
+              </p>
+
+              <div class="p-3 bg-gray-100 rounded border">
+                <p><b>Name:</b> ${ex?.name || "-"}</p>
+                <p><b>Reg No:</b> ${ex?.roll_no || "-"}</p>
+                <p><b>Email:</b> ${ex?.email || "-"}</p>
+              </div>
+            </div>
+          `,
+            icon: "warning",
+            confirmButtonText: "OK",
+            customClass: { confirmButton: "bg-blue-600 text-white px-4 py-2 rounded" },
+            buttonsStyling: false
+          });
+        }
+
+        return Swal.fire({
+          title: "Failed to Add Student",
+          text: data.message || "Unexpected error occurred",
+          icon: "error",
+        });
+      }
+
+      Swal.fire({
+        title: "Student Added",
+        text: `${formattedStudent.name} added successfully`,
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setStudents(prev => [
+        ...prev,
+        { ...formattedStudent, student_id: data.student_id }
+      ]);
+
+      setShowAddModal(false);
+
+    } catch (err) {
+      Swal.fire({
+        title: "Server Error",
+        text: "Could not reach server",
+        icon: "error",
+      });
+    } finally {
+      setAdding(false);
+    }
+  };
+
+
+
 
   const handleSave = async () => {
     const confirm = await
@@ -99,7 +247,6 @@ export default function Students({ user }) {
           showConfirmButton: false,
         });
 
-        // Update local list immediately
         setStudents((prev) =>
           prev.map((s) =>
             s.student_id === editingStudent.student_id ? { ...s, ...editForm } : s
@@ -125,42 +272,113 @@ export default function Students({ user }) {
     }
   };
 
+  const deptOptions = Object.entries(DEPT_MAP).map(([id, name]) => ({
+    value: Number(id),
+    label: name
+  }));
 
 
-  // --- Fetch classes (for principal dropdown) ---
+  const formattedClassOptions = classes.map(c => ({
+    value: c.class_id,
+    label: `${romanMap[c.year]} Year - ${DEPT_MAP[c.dept_id]}`
+  }));
+
+
+
   useEffect(() => {
-    if (user?.role !== "Principal") return;
+    if (!user) return;
+
+    if (user.role === "Principal") {
+      setFilters({ dept: "", year: "", classId: "", multiFilters: [] });
+    }
+
+    if (user.role === "HOD") {
+      setFilters({ dept: user.dept_id, year: "", classId: "", multiFilters: [] });
+    }
+
+    if (user.role === "CA") {
+      setFilters({
+        dept: user.dept_id,
+        year: "",
+        classId: user.assigned_class_id,
+        multiFilters: []
+      });
+    }
+  }, [user]);
+
+
+  const yearOptions = [...new Set(
+    classes
+      .filter(c => !filters.dept || c.dept_id === filters.dept)
+      .map(c => c.year)
+  )].map(y => ({ value: y, label: ` ${romanMap[y]} Year` }));
+
+
+
+
+
+  useEffect(() => {
+    if (!user) return;
+
     const fetchClasses = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/classes`, {
+        let url = "";
+
+        if (user.role === "Principal") {
+          url = `${BASE_URL}/classes`;
+        }
+
+        else if (user.role === "HOD") {
+          url = `${BASE_URL}/classes?dept_id=${user.dept_id}`;
+        }
+
+        else if (user.role === "CA") {
+          url = `${BASE_URL}/classes/${user.assigned_class_id}`;
+        }
+
+        const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         const data = await res.json();
-        setClasses(data);
+
+        setClasses(Array.isArray(data) ? data : [data]);
+
       } catch (err) {
         console.error("Error fetching classes:", err);
       }
     };
+
     fetchClasses();
   }, [user, token]);
 
-  // --- Fetch students based on role ---
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         setLoading(true);
 
         let url = "";
+
         if (user?.role === "Principal") {
           url = selectedClass
             ? `${BASE_URL}/classes/${selectedClass}/students`
-            : `${BASE_URL}/students`; // all students
-        } else if (user?.assigned_class_id) {
+            : `${BASE_URL}/students`;
+        }
+
+        else if (user?.role === "HOD") {
+          url = `${BASE_URL}/departments/${user.dept_id}/students`;
+        }
+
+        else if (user?.role === "CA") {
           url = `${BASE_URL}/classes/${user.assigned_class_id}/students`;
-        } else {
+        }
+
+        else {
           setLoading(false);
           return;
         }
+
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
@@ -178,42 +396,46 @@ export default function Students({ user }) {
     fetchStudents();
   }, [user, token, selectedClass]);
 
-  // --- Apply filters + search ---
   useEffect(() => {
     let result = [...students];
-    const { multiFilters } = filters;
+    const { dept, year, classId, multiFilters } = filters;
+
+    if (dept) {
+      result = result.filter(s => s.dept_id === dept);
+    }
+
+    if (year) {
+      result = result.filter(s => {
+        const cls = classes.find(c => c.class_id === s.class_id);
+        return cls?.year === year;
+      });
+    }
+
+    if (classId) {
+      result = result.filter(s => s.class_id === classId);
+    }
 
     if (multiFilters.length > 0) {
-      result = result.filter((s) => {
-        // Normalize all fields to booleans
-        const jain = s.jain === true || s.jain === 1 || s.jain === "1";
-        const hostel = s.hostel === true || s.hostel === 1 || s.hostel === "1";
-        const bus = s.bus === true || s.bus === 1 || s.bus === "1";
+      result = result.filter(s => {
+        const jain = s.jain === 1;
+        const hostel = s.hostel === 1;
+        const bus = s.bus === 1;
 
-        return multiFilters.every((filter) => {
-          switch (filter) {
-            case "Jain":
-              return jain;
-            case "Non-Jain":
-              return !jain;
-            case "Hostel":
-              return hostel;
-            case "DayScholar":
-              return !hostel;
-            case "Bus":
-              return bus;
-            case "NoBus":
-              return !bus;
-            default:
-              return true;
-          }
+        return multiFilters.every(f => {
+          if (f === "Jain") return jain;
+          if (f === "Non-Jain") return !jain;
+          if (f === "Hostel") return hostel;
+          if (f === "DayScholar") return !hostel;
+          if (f === "Bus") return bus;
+          if (f === "NoBus") return !bus;
+          return true;
         });
       });
     }
 
     if (search.trim() !== "") {
       result = result.filter(
-        (s) =>
+        s =>
           s.name?.toLowerCase().includes(search.toLowerCase()) ||
           s.roll_no?.toLowerCase().includes(search.toLowerCase())
       );
@@ -221,7 +443,8 @@ export default function Students({ user }) {
 
     setFilteredStudents(result);
     setCurrentPage(1);
-  }, [filters, search, students]);
+  }, [filters, search, students, classes]);
+
 
 
   const indexOfLastStudent = currentPage * studentsPerPage;
@@ -236,19 +459,8 @@ export default function Students({ user }) {
   };
 
 
-  // --- React Select options for Principal class filter ---
-  const classOptions = useMemo(
-    () => [
-      { value: "", label: "All Classes" },
-      ...classes.map((c) => ({
-        value: c.class_id,
-        label: `Year ${c.year} - ${DEPT_MAP[c.dept_id] || "Dept"}`,
-      })),
-    ],
-    [classes]
-  );
 
- if (loading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 animate-pulse">
         <motion.div
@@ -274,81 +486,76 @@ export default function Students({ user }) {
 
   return (
     <div className="p-6 min-h-screen bg-gray-50">
+
       <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6 flex items-center">
         <FaUserGraduate className="text-red-600 mr-3" />
         {user?.role === "Principal"
-          ? "All Students Overview"
-          : `Students of Class ${user?.assigned_class_id || ""}`}
+          ? "Students Overview"
+          : ""}
       </h1>
 
-      {/* --- Filters for Principal --- */}
-      {user?.role === "Principal" && (
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:items-center mb-6">
-          {/* Class Filter */}
-          <div className="w-full sm:w-64">
-            <Select
-              options={classOptions}
-              value={classOptions.find((o) => o.value === selectedClass)}
-              onChange={(opt) => setSelectedClass(opt?.value || "")}
-              placeholder="Filter by Class"
-              isSearchable
-            />
-          </div>
+      {user.role === "Principal" && (
+        <div className="flex gap-3 flex-wrap mb-6">
 
-          {/* Combined Multi Filter */}
-          <div className="w-full sm:w-72">
-            <Select
-              isMulti
-              options={[
-                { value: "Jain", label: "Jain" },
-                { value: "Non-Jain", label: "Non-Jain" },
-                { value: "Hostel", label: "Hostel" },
-                { value: "DayScholar", label: "Day Scholar" },
-                { value: "Bus", label: "College Bus" },
-                { value: "NoBus", label: "No Bus" },
-              ]}
-              value={filters.multiFilters.map((f) => ({
-                value: f,
-                label:
-                  f === "Jain"
-                    ? "Jain"
-                    : f === "Non-Jain"
-                      ? "Non-Jain"
-                      : f === "Hostel"
-                        ? "Hostel"
-                        : f === "DayScholar"
-                          ? "Day Scholar"
-                          : f === "Bus"
-                            ? "College Bus"
-                            : "No Bus",
-              }))}
-              onChange={(selected) =>
-                setFilters({
-                  ...filters,
-                  multiFilters: selected ? selected.map((s) => s.value) : [],
-                })
-              }
-              placeholder="Filter by Type"
-              className="text-sm"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: "8px",
-                  borderColor: "#d1d5db",
-                  minHeight: "38px",
-                }),
-                multiValue: (base) => ({
-                  ...base,
-                  backgroundColor: "#e0f2fe",
-                  color: "#0369a1",
-                }),
-              }}
+          <Select
+            className="w-52"
+            placeholder="All Departments"
+            options={[{ value: "", label: "All Departments" },
+            ...Object.entries(DEPT_MAP).map(([id, name]) => ({
+              value: Number(id),
+              label: name
+            }))
+            ]}
+            value={filters.dept ? { value: filters.dept, label: DEPT_MAP[filters.dept] } : null}
+            onChange={(opt) => setFilters(f => ({
+              ...f,
+              dept: opt?.value || "",
+              year: "",
+              classId: ""
+            }))}
+          />
 
-            />
-          </div>
+          <Select
+            className="w-52"
+            placeholder="All Years"
+            options={[{ value: "", label: "All Years" }, ...yearOptions]}
+            value={yearOptions.find(o => o.value === filters.year) || null}
+            onChange={(opt) => setFilters(f => ({
+              ...f,
+              year: opt?.value || "",
+              classId: ""
+            }))}
+          />
 
+          <Select
+            isMulti
+            options={[
+              { value: "Jain", label: "Jain" },
+              { value: "Non-Jain", label: "Non-Jain" },
+              { value: "Hostel", label: "Hostel" },
+              { value: "DayScholar", label: "Day Scholar" },
+              { value: "Bus", label: "College Bus" },
+              { value: "NoBus", label: "No Bus" },
+            ]}
+            value={filters.multiFilters.map(f => ({
+              value: f,
+              label:
+                f === "Jain" ? "Jain" :
+                  f === "Non-Jain" ? "Non-Jain" :
+                    f === "Hostel" ? "Hostel" :
+                      f === "DayScholar" ? "Day Scholar" :
+                        f === "Bus" ? "College Bus" : "No Bus"
+            }))}
+            onChange={(selected) =>
+              setFilters(f => ({
+                ...f,
+                multiFilters: selected ? selected.map(s => s.value) : []
+              }))
+            }
+            placeholder="Filter by Category"
+            className="text-sm"
+          />
 
-          {/* Search Bar */}
           <div className="relative w-full sm:w-64">
             <FaSearch className="absolute left-3 top-3 text-gray-400" />
             <input
@@ -359,10 +566,136 @@ export default function Students({ user }) {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+
+        </div>
+
+
+
+      )}
+
+
+      {user.role === "HOD" && (
+        <div className="flex gap-3 flex-wrap mb-6">
+
+          <Select
+            className="w-52"
+            placeholder="All Years"
+            options={[{ value: "", label: "All Years" }, ...yearOptions]}
+            value={yearOptions.find(o => o.value === filters.year) || null}
+            onChange={(opt) => setFilters(f => ({
+              ...f,
+              year: opt?.value || "",
+              classId: ""
+            }))}
+          />
+
+          <Select
+            isMulti
+            options={[
+              { value: "Jain", label: "Jain" },
+              { value: "Non-Jain", label: "Non-Jain" },
+              { value: "Hostel", label: "Hostel" },
+              { value: "DayScholar", label: "Day Scholar" },
+              { value: "Bus", label: "College Bus" },
+              { value: "NoBus", label: "No Bus" },
+            ]}
+            value={filters.multiFilters.map(f => ({
+              value: f,
+              label:
+                f === "Jain" ? "Jain" :
+                  f === "Non-Jain" ? "Non-Jain" :
+                    f === "Hostel" ? "Hostel" :
+                      f === "DayScholar" ? "Day Scholar" :
+                        f === "Bus" ? "College Bus" : "No Bus"
+            }))}
+            onChange={(selected) =>
+              setFilters(f => ({
+                ...f,
+                multiFilters: selected ? selected.map(s => s.value) : []
+              }))
+            }
+            placeholder="Filter by Category"
+            className="text-sm"
+          />
+          <div className="relative w-full sm:w-64">
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name or reg no"
+              className="pl-9 pr-3 py-2 w-full border rounded-lg text-sm focus:outline-none"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+
         </div>
       )}
 
-      {/* --- Student Table --- */}
+
+      {user.role === "CA" && (
+        <div className="flex gap-3 flex-wrap mb-6">
+          <div className="px-3 py-2 bg-gray-100 border rounded">
+            Dept: {DEPT_MAP[user.dept_id]}
+          </div>
+          <div className="px-3 py-2 bg-gray-100 border rounded">
+            Class: {romanMap[user.assigned_class_id]}
+          </div>
+          <Select
+            isMulti
+            options={[
+              { value: "Jain", label: "Jain" },
+              { value: "Non-Jain", label: "Non-Jain" },
+              { value: "Hostel", label: "Hostel" },
+              { value: "DayScholar", label: "Day Scholar" },
+              { value: "Bus", label: "College Bus" },
+              { value: "NoBus", label: "No Bus" },
+            ]}
+            value={filters.multiFilters.map(f => ({
+              value: f,
+              label:
+                f === "Jain" ? "Jain" :
+                  f === "Non-Jain" ? "Non-Jain" :
+                    f === "Hostel" ? "Hostel" :
+                      f === "DayScholar" ? "Day Scholar" :
+                        f === "Bus" ? "College Bus" : "No Bus"
+            }))}
+            onChange={(selected) =>
+              setFilters(f => ({
+                ...f,
+                multiFilters: selected ? selected.map(s => s.value) : []
+              }))
+            }
+            placeholder="Filter by Category"
+            className="text-sm"
+          />
+          <div className="relative w-full sm:w-64">
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name or reg no"
+              className="pl-9 pr-3 py-2 w-full border rounded-lg text-sm focus:outline-none"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+        </div>
+      )}
+
+
+
+
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Add Student
+        </button>
+      </div>
+
+
       {filteredStudents.length === 0 ? (
         <div className="p-6 bg-white rounded-xl shadow-md text-center text-gray-500">
           No students found.
@@ -451,21 +784,28 @@ export default function Students({ user }) {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs sm:text-sm">
+                  <td className="px-4 py-3 text-xs sm:text-sm flex gap-2">
                     <button
                       onClick={() => handleEdit(s)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                       Edit
                     </button>
+
+                    <button
+                      onClick={() => handleDelete(s)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
                   </td>
+
 
                 </tr>
               ))}
             </tbody>
 
           </table>
-          {/* Pagination Controls */}
           {filteredStudents.length > studentsPerPage && (
             <div className="flex justify-center items-center py-4 gap-2 text-sm flex-wrap">
               <button
@@ -479,7 +819,6 @@ export default function Students({ user }) {
                 Prev
               </button>
 
-              {/* Smart Pagination Numbers */}
               {(() => {
                 const pageButtons = [];
                 const maxVisible = 4;
@@ -547,7 +886,6 @@ export default function Students({ user }) {
                 </h2>
 
                 <div className="space-y-3">
-                  {/* Jain */}
                   <div className="flex justify-between items-center">
                     <span>Jain</span>
                     <input
@@ -557,7 +895,6 @@ export default function Students({ user }) {
                     />
                   </div>
 
-                  {/* Hostel */}
                   <div className="flex justify-between items-center">
                     <span>Hostel</span>
                     <input
@@ -569,7 +906,6 @@ export default function Students({ user }) {
                     />
                   </div>
 
-                  {/* Bus */}
                   <div className="flex justify-between items-center">
                     <span>College Bus</span>
                     <input
@@ -598,6 +934,152 @@ export default function Students({ user }) {
               </div>
             </div>
           )}
+
+          {showAddModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl shadow-lg w-96 p-6">
+
+                <h2 className="text-xl font-bold mb-4">Add New Student</h2>
+
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={newStudent.name}
+                    onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
+                    className="w-full border p-2 rounded"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Register Number"
+                    value={newStudent.roll_no}
+                    onChange={(e) => setNewStudent({ ...newStudent, roll_no: e.target.value })}
+                    className="w-full border p-2 rounded"
+                  />
+
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={newStudent.email}
+                    onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
+                    className="w-full border p-2 rounded"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Mobile"
+                    value={newStudent.mobile}
+                    onChange={(e) => setNewStudent({ ...newStudent, mobile: e.target.value })}
+                    className="w-full border p-2 rounded"
+                  />
+
+                  {user.role === "Principal" && (
+                    <Select
+                      options={deptOptions}
+                      placeholder="Select Department"
+                      value={deptOptions.find(d => d.value === newStudent.dept_id) || null}
+                      onChange={(opt) => setNewStudent({ ...newStudent, dept_id: opt.value })}
+                    />
+                  )}
+
+                  {user.role === "HOD" && (
+                    <input
+                      className="border p-2 rounded bg-gray-100"
+                      value={DEPT_MAP[user.dept_id]}
+                      disabled
+                    />
+                  )}
+
+                  {user.role === "CA" && (
+                    <input
+                      className="border p-2 rounded bg-gray-100"
+                      value={DEPT_MAP[user.dept_id]}
+                      disabled
+                    />
+                  )}
+
+                  {user.role === "Principal" && (
+                    <Select
+                      options={formattedClassOptions}
+                      placeholder="Select Class"
+                      value={formattedClassOptions.find(c => c.value === newStudent.class_id) || null}
+                      onChange={(opt) => setNewStudent({ ...newStudent, class_id: opt.value })}
+                    />
+                  )}
+
+                  {user.role === "HOD" && (
+                    <Select
+                      options={formattedClassOptions.filter(c => c.dept_id === user.dept_id)}
+                      placeholder="Select Class"
+                      value={formattedClassOptions.find(c => c.value === newStudent.class_id) || null}
+                      onChange={(opt) => setNewStudent({ ...newStudent, class_id: opt.value })}
+                    />
+                  )}
+
+                  {user.role === "CA" && (
+                    <input
+                      className="border p-2 rounded bg-gray-100"
+                      value={`${romanMap[user.assigned_class_id]} - ${DEPT_MAP[user.dept_id]}`}
+                      disabled
+                    />
+                  )}
+
+
+                  <div className="flex items-center justify-between">
+                    <label>Jain</label>
+                    <input
+                      type="checkbox"
+                      checked={newStudent.jain}
+                      onChange={(e) =>
+                        setNewStudent({ ...newStudent, jain: e.target.checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <label>Hostel</label>
+                    <input
+                      type="checkbox"
+                      checked={newStudent.hostel}
+                      onChange={(e) =>
+                        setNewStudent({ ...newStudent, hostel: e.target.checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <label>Bus</label>
+                    <input
+                      type="checkbox"
+                      checked={newStudent.bus}
+                      onChange={(e) =>
+                        setNewStudent({ ...newStudent, bus: e.target.checked })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={handleAddStudent}
+                    disabled={adding}
+                    className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+                  >
+                    {adding ? "Adding..." : "Add"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
 
         </div>
       )}

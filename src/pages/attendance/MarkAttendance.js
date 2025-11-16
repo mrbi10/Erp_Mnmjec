@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
-// Removed: import "../../styles/Attendance.css"; -> Using Tailwind for styles
 import { BASE_URL } from '../../constants/API';
 import { FaUserCheck, FaUserTimes, FaUserCircle , FaUndo, FaCheck, FaCalendarDay, FaSearch, FaUsers, FaClipboardCheck, FaTimesCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 
-// Custom SweetAlert2 Class for a modern look (You'll need to define these in your global CSS)
-/*
-.swal-classic-popup { border-radius: 12px !important; }
-.swal-classic-button { background-color: #0d9488 !important; }
-.swal-classic-button-cancel { background-color: #ef4444 !important; }
-*/
 
 
 function MarkAttendance({ user }) {

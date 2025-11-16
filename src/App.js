@@ -23,6 +23,13 @@ import PrincipalOverview from './pages/marks/PrincipalOverview';
 import DepartmentAnalysis from './pages/marks/DepartmentAnalysis';
 import TopPerformers from './pages/marks/TopPerformers';
 import NetworkAlert from './components/NetworkAlert';
+import FeesStudentView from './pages/Fees/FeesStudentView';
+import Home from './pages/Home';
+import Fees from './pages/Fees';
+import FeesList from './pages/Fees/FeesList';
+import FeesHistory from './pages/Fees/FeesHistory';
+import FeesAdd from './pages/Fees/FeesAddPayment';
+import Feesanalytics from './pages/Fees/FeesAnalytics';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -66,23 +73,26 @@ export default function App() {
       <main className="pt-16 p-6 text-slate-800 dark:text-slate-100">
         <Routes>
           {/* Public routes */}
+          <Route path="/Erp_Mnmjec" element={<Navigate to="/Erp_Mnmjec/home" />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />} />
+
+          <Route path="Erp_Mnmjec/home" element={<Home user={user} />} />
+
 
           {/* Protected routes */}
           {user && (
             <>
-              <Route path="/" element={<Navigate to="/dashboard" />} />
-              <Route path="/dashboard" element={<Dashboard user={user} />} />
-              <Route path="/students" element={<Students user={user} />} />
-              <Route path="/faculty" element={<FacultyList user={user} />} />
-              <Route path="/reports" element={<Reports user={user} />} />
-              <Route path="/marks" element={<Marks user={user} />} />
-              <Route path="/late" element={<Late user={user} />} />
-              <Route path="/SecurityLateEntry" element={<SecurityLateEntry user={user} />} />
+              <Route path="Erp_Mnmjec/dashboard" element={<Dashboard user={user} />} />
+              <Route path="Erp_Mnmjec/students" element={<Students user={user} />} />
+              <Route path="Erp_Mnmjec/faculty" element={<FacultyList user={user} />} />
+              <Route path="Erp_Mnmjec/reports" element={<Reports user={user} />} />
+              <Route path="Erp_Mnmjec/marks" element={<Marks user={user} />} />
+              <Route path="Erp_Mnmjec/late" element={<Late user={user} />} />
+              <Route path="Erp_Mnmjec/SecurityLateEntry" element={<SecurityLateEntry user={user} />} />
 
               {/* Attendance nested routes */}
-              <Route path="/attendance" element={<Attendance user={user} />}>
+              <Route path="Erp_Mnmjec/attendance" element={<Attendance user={user} />}>
                 <Route
                   path="view"
                   element={user.role === 'student' ? <StudentAttendance user={user} /> : <PageNotFound />}
@@ -102,12 +112,20 @@ export default function App() {
                 <Route path="*" element={<PageNotFound />} />
               </Route>
 
-              <Route path="/marks" element={<Marks user={user} />}>
+              <Route path="Erp_Mnmjec/marks" element={<Marks user={user} />}>
                 <Route path="enter" element={<EnterMarks />} />
                 <Route path="view" element={<ViewMarks />} />
                 <Route path="overview" element={<PrincipalOverview />} />
                 <Route path="analysis" element={<DepartmentAnalysis />} />
                 <Route path="top" element={<TopPerformers />} />
+              </Route>
+
+              <Route path="Erp_Mnmjec/fees" element={<Fees user={user} />}>
+                <Route path="list" element={<FeesList user={user} />} />
+                <Route path="student/:reg_no" element={<FeesStudentView user={user} />} />
+                <Route path="history" element={<FeesHistory user={user} />} />
+                <Route path="add/:reg_no" element={<FeesAdd user={user} />} />
+                <Route path="analytics" element={<Feesanalytics user={user} />} />
               </Route>
 
 

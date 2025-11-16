@@ -15,7 +15,7 @@ export default function Marks({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const basePath = "/marks";
+  const basePath = "/Erp_Mnmjec/marks";
 
   // --- Role-based color styles ---
   const optionStyles = {
