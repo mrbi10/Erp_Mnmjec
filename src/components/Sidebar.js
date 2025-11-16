@@ -62,7 +62,7 @@ export default function Sidebar({ role, open, onClose }) {
       key: '/Erp_Mnmjec/fees',
       label: 'Fees',
       icon: <CheckSquareOutlined />,
-      roles: ['Staff', 'Principal', 'student','CA', 'HOD'],
+      roles: ['Staff', 'Principal','F&A' ,'student','CA', 'HOD'],
     },
     {
       key: '/Erp_Mnmjec/late',

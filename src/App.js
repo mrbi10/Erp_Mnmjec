@@ -27,9 +27,8 @@ import FeesStudentView from './pages/Fees/FeesStudentView';
 import Home from './pages/Home';
 import Fees from './pages/Fees';
 import FeesList from './pages/Fees/FeesList';
-import FeesHistory from './pages/Fees/FeesHistory';
-import FeesAdd from './pages/Fees/FeesAddPayment';
 import Feesanalytics from './pages/Fees/FeesAnalytics';
+import FeesAdd from './pages/Fees/FeesAdd';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -123,9 +122,8 @@ export default function App() {
               <Route path="Erp_Mnmjec/fees" element={<Fees user={user} />}>
                 <Route path="list" element={<FeesList user={user} />} />
                 <Route path="student/:reg_no" element={<FeesStudentView user={user} />} />
-                <Route path="history" element={<FeesHistory user={user} />} />
-                <Route path="add/:reg_no" element={<FeesAdd user={user} />} />
                 <Route path="analytics" element={<Feesanalytics user={user} />} />
+                <Route path="add" element={<FeesAdd user={user} />} />
               </Route>
 
 

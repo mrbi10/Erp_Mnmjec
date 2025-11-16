@@ -23,8 +23,8 @@ export default function FeesList({ user }) {
   const [classes, setClasses] = useState([]);
   const [filteredYears, setFilteredYears] = useState([]);
 
-  const allowDept = ["Principal", "HOD", "Staff", "CA"].includes(user?.role);
-  const allowYear = ["Principal", "HOD", "CA"].includes(user?.role);
+  const allowDept = ["Principal", "F&A", "HOD", "Staff", "CA"].includes(user?.role);
+  const allowYear = ["Principal", "F&A", "HOD", "CA"].includes(user?.role);
 
   const token = localStorage.getItem("token");
 
@@ -162,7 +162,7 @@ export default function FeesList({ user }) {
           <Select
             options={jainOptions}
             placeholder="Jain / Non-Jain"
-            value={jainOptions.find(o => o.value === filters.jain)}
+            value={jainOptions.find(o => o.value === filters.jain) || null}
             onChange={(val) =>
               setFilters({ ...filters, jain: val?.value || "" })
             }
@@ -171,7 +171,7 @@ export default function FeesList({ user }) {
           <Select
             options={busOptions}
             placeholder="Bus"
-            value={busOptions.find(o => o.value === filters.bus)}
+            value={busOptions.find(o => o.value === filters.bus) || null}
             onChange={(val) =>
               setFilters({ ...filters, bus: val?.value || "" })
             }
@@ -180,7 +180,7 @@ export default function FeesList({ user }) {
           <Select
             options={hostelOptions}
             placeholder="Hostel"
-            value={hostelOptions.find(o => o.value === filters.hostel)}
+            value={hostelOptions.find(o => o.value === filters.hostel) || null}
             onChange={(val) =>
               setFilters({ ...filters, hostel: val?.value || "" })
             }

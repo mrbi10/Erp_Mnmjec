@@ -67,6 +67,31 @@ export default function Fees({ user }) {
     );
   }
 
+  // Finance & Accounts Role
+  if (user?.role === "F&A") {
+    options.push(
+      {
+        label: "Add Fees",
+        page: "add",
+        icon: <FaMoneyBillWave className="text-green-600" />,
+        description: "Insert semester, hostel, or transport fee entries.",
+      },
+      {
+        label: "Bulk Upload",
+        page: "add",
+        icon: <FaChartPie className="text-purple-600" />,
+        description: "Upload fee records using Excel.",
+      },
+      {
+        label: "Fee List",
+        page: "list",
+        icon: <FaListUl className="text-blue-600" />,
+        description: "Search & verify all fee records.",
+      }
+    );
+  }
+
+
   // CA – Class only
   if (user?.role === "CA") {
     options.push(

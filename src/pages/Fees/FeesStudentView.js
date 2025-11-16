@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BASE_URL } from "../../constants/API";
 import { useParams } from "react-router-dom";
-import FeesAddPayment from "./FeesAddPayment";
-import FeesHistory from "./FeesHistory";
+
 
 export default function FeesStudentView() {
   const { reg_no } = useParams();
@@ -36,7 +35,6 @@ export default function FeesStudentView() {
       </div>
     );
 
-  const canEdit = ["Principal", "HOD", "CA"].includes(user.role);
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
@@ -80,15 +78,7 @@ export default function FeesStudentView() {
         </div>
       </div>
 
-      {canEdit && (
-        <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
-          <FeesAddPayment reg_no={reg_no} refresh={load} />
-        </div>
-      )}
-
-      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-        <FeesHistory reg_no={reg_no} />
-      </div>
+      
     </div>
   );
 }
