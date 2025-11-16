@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 
 // DATA
 const portalAreas = [
-  { title: "Student Dashboard", icon: AcademicCapIcon, link: "/Erp_Mnmjec/dashboard" },
-  { title: "Faculty Management", icon: UserGroupIcon, link: "/Erp_Mnmjec/faculty" },
-  { title: "Admin & HOD Services", icon: ChartBarIcon, link: "/Erp_Mnmjec/admin-dashboard" },
-  { title: "Academic Calendar", icon: CalendarDaysIcon, link: "/Erp_Mnmjec/calendar" }
+  { title: "Student Dashboard", icon: AcademicCapIcon,  },
+  { title: "Faculty Management", icon: UserGroupIcon,  },
+  { title: "Admin & HOD Services", icon: ChartBarIcon, },
+  { title: "Academic Calendar", icon: CalendarDaysIcon, }
 ];
 
 export default function Home() {
@@ -78,15 +78,7 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-8 text-center text-gray-500 text-sm border-t bg-white">
-        <p>© {new Date().getFullYear()} MNMJEC</p>
-        <p className="text-blue-600 mt-1">
-          Designed and Developed by 
-          <a href="https://portfolio.mrbi.live" className="text-blue-700 underline ml-1" target="_blank" rel="noopener noreferrer">
-            Abinanthan V
-          </a>
-        </p>
-      </footer>
+     
     </div>
   );
 }

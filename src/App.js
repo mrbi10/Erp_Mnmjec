@@ -75,7 +75,6 @@ export default function App() {
           <Route path="/Erp_Mnmjec" element={<Navigate to="/Erp_Mnmjec/home" />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />} />
-
           <Route path="Erp_Mnmjec/home" element={<Home user={user} />} />
 
 
@@ -127,12 +126,29 @@ export default function App() {
               </Route>
 
 
-              {/* Catch-all for unknown routes */}
               <Route path="*" element={<PageNotFound />} />
             </>
           )}
         </Routes>
       </main>
+      <footer className="py-3 text-center text-[11px] text-gray-500 bg-white select-none">
+        <p className="leading-tight">
+          © {new Date().getFullYear()} MNMJEC
+        </p>
+        <p className="mt-1 tracking-wide">
+          Designed by{" "}
+          <a
+            href="https://portfolio.mrbi.live"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-700 font-medium hover:text-black transition-colors"
+          >
+            Abinanthan&nbsp;V
+          </a>{" "}
+          <span className="opacity-70">· IV Year CSE, MNMJEC</span>
+        </p>
+      </footer>
+
     </div>
   );
 }
