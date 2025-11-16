@@ -4,14 +4,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { FaExclamationTriangle, FaChartLine } from "react-icons/fa";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
-import { BASE_URL } from "../constants/API";
+import { BASE_URL } from "../../constants/API";
 
 // Import the new role-specific dashboards
-import StudentDashboard from "./dashboards/StudentDashboard";
-import StaffDashboard from "./dashboards/StaffDashboard";
-import AdminDashboard from "./dashboards/AdminDashboard";
-import PrincipalDashboard from "./dashboards/PrincipalDashboard"; 
-import ProfileCard from "../components/ProfileCard"; 
+import StudentDashboard from "../dashboards/StudentDashboard";
+import StaffDashboard from "../dashboards/StaffDashboard";
+import PrincipalDashboard from "../dashboards/PrincipalDashboard"; 
+import ProfileCard from "../../components/ProfileCard"; 
 
 
 // Register Chart.js components once globally

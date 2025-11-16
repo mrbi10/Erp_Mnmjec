@@ -1,34 +1,41 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
-import Students from './pages/students/Students';
-import FacultyList from './pages/faculty/FacultyList';
-import Marks from './pages/Marks';
-import Attendance from './pages/Attendance';
-import PageNotFound from './pages/PageNotFound';
-import Reports from './pages/Reports';
-import Late from './pages/Late';
-import SecurityLateEntry from './pages/SecurityLateEntry';
 import ForgotPassword from './components/forgotpassword';
 import ResetPassword from './components/resetpassword';
+import NetworkAlert from './components/NetworkAlert';
+
+import Home from './pages/orthers/Home';
+import PageNotFound from './pages/orthers/PageNotFound';
+
+import Dashboard from './pages/sidebar/Dashboard';
+import Attendance from './pages/sidebar/Attendance';
+import Marks from './pages/sidebar/Marks';
+import Reports from './pages/sidebar/Reports';
+import Late from './pages/sidebar/Late';
+import SecurityLateEntry from './pages/sidebar/SecurityLateEntry';
+import Fees from './pages/sidebar/Fees';
+
+import Students from './pages/students/Students';
+import FacultyList from './pages/faculty/FacultyList';
+
 import StudentAttendance from './pages/attendance/ViewAttendance';
 import MarkAttendance from './pages/attendance/MarkAttendance';
 import ReportsPage from './pages/attendance/Reports';
 import ManageStaff from './pages/attendance/ManageStaff';
+
 import EnterMarks from './pages/marks/EnterMarks';
 import ViewMarks from './pages/marks/ViewMarks'
 import PrincipalOverview from './pages/marks/PrincipalOverview';
 import DepartmentAnalysis from './pages/marks/DepartmentAnalysis';
 import TopPerformers from './pages/marks/TopPerformers';
-import NetworkAlert from './components/NetworkAlert';
-import FeesStudentView from './pages/Fees/FeesStudentView';
-import Home from './pages/Home';
-import Fees from './pages/Fees';
-import FeesList from './pages/Fees/FeesList';
-import Feesanalytics from './pages/Fees/FeesAnalytics';
-import FeesAdd from './pages/Fees/FeesAdd';
+
+import FeesStudentView from './pages/fees/FeesStudentView';
+import FeesList from './pages/fees/FeesList';
+import Feesanalytics from './pages/fees/FeesAnalytics';
+import FeesAdd from './pages/fees/FeesAdd';
 
 export default function App() {
   const [user, setUser] = useState(null);

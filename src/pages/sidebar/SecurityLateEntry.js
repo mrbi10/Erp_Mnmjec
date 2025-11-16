@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { BASE_URL } from "../constants/API";
+import { BASE_URL } from "../../constants/API";
 import { FaUserClock } from "react-icons/fa";
 
 export default function SecurityLateEntry({ user }) {
