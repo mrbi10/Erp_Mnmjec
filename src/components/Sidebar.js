@@ -1,125 +1,158 @@
-import React, { useEffect, useRef } from 'react';
-import { Layout, Menu } from 'antd';
+import React, { useEffect, useRef } from "react";
 import {
-  DashboardOutlined,
-  UserOutlined,
-  CheckSquareOutlined,
-  FileTextOutlined
-} from '@ant-design/icons';
-import { useLocation, useNavigate } from 'react-router-dom';
-
-const { Sider } = Layout;
+  WalletOutlined,
+  AppstoreOutlined,
+  IdcardOutlined,
+  CheckCircleOutlined,
+  FileDoneOutlined,
+  ClockCircleOutlined,
+  BarChartOutlined,
+  TeamOutlined,
+  SafetyCertificateOutlined,
+} from "@ant-design/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Sidebar({ role, open, onClose }) {
-
   const sidebarRef = useRef();
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isMobile = window.innerWidth <= 768;
+
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+    function handleClickOutside(e) {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
         onClose();
       }
     }
 
-    if (open) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    if (open && isMobile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open, onClose]);
 
   const links = [
     {
       key: '/Erp_Mnmjec/dashboard',
       label: 'Dashboard',
-      icon: <DashboardOutlined />,
+      icon: <AppstoreOutlined />,
       roles: ['Staff', 'student', 'CA', 'HOD', 'Principal'],
     },
     {
       key: '/Erp_Mnmjec/students',
       label: 'Students',
-      icon: <UserOutlined />,
+      icon: <TeamOutlined />,
       roles: ['CA', 'HOD', 'Principal'],
     },
     {
       key: '/Erp_Mnmjec/faculty',
-      label: 'faculty',
-      icon: <UserOutlined />,
+      label: 'Faculty',
+      icon: <IdcardOutlined />,
       roles: ['HOD', 'Principal'],
     },
     {
       key: '/Erp_Mnmjec/attendance',
       label: 'Attendance',
-      icon: <CheckSquareOutlined />,
+      icon: <CheckCircleOutlined />,
       roles: ['Staff', 'student', 'CA', 'HOD'],
     },
     {
       key: '/Erp_Mnmjec/marks',
       label: 'Marks',
-      icon: <CheckSquareOutlined />,
-      roles: ['Staff', 'Principal', 'student','CA', 'HOD'],
+      icon: <FileDoneOutlined />,
+      roles: ['Staff', 'Principal', 'student', 'CA', 'HOD'],
     },
-      {
+    {
       key: '/Erp_Mnmjec/fees',
       label: 'Fees',
-      icon: <CheckSquareOutlined />,
-      roles: ['Staff', 'Principal','F&A' ,'student','CA', 'HOD'],
+      icon: <WalletOutlined />,
+      roles: ['Staff', 'Principal', 'F&A', 'student', 'CA', 'HOD'],
     },
     {
       key: '/Erp_Mnmjec/late',
-      label: 'Late arrival',
-      icon: <FileTextOutlined />,
+      label: 'Late Arrival',
+      icon: <ClockCircleOutlined />,
       roles: ['CA', 'HOD', 'Principal'],
     },
     {
       key: '/Erp_Mnmjec/reports',
       label: 'Reports',
-      icon: <FileTextOutlined />,
+      icon: <BarChartOutlined />,
       roles: ['CA', 'HOD', 'Principal'],
     },
     {
       key: '/Erp_Mnmjec/SecurityLateEntry',
-      label: 'SecurityLateEntry',
-      icon: <FileTextOutlined />,
+      label: 'Security Entry',
+      icon: <SafetyCertificateOutlined />,
       roles: ['Security'],
     },
   ];
 
-  const menuItems = links
-    .filter(link => link.roles.includes(role))
-    .map(link => ({
-      key: link.key,
-      icon: link.icon,
-      label: link.label,
-    }));
+
+  const menuItems = links.filter((i) => i.roles.includes(role));
 
   return (
-    <aside
-      ref={sidebarRef}
-      className={`
-        fixed top-0 left-0 h-full w-64 bg-slate-900 text-white z-40 transform
-        ${open ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300
-      `}
-    >
-      {/* Header / Logo */}
-      <div className="h-16 flex items-center justify-center text-xl font-bold border-b border-gray-700">
-        My App
-      </div>
+    <>
+      {/* BACKDROP (MOBILE ONLY) */}
+      {isMobile && open && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-30"
+          onClick={onClose}
+        />
+      )}
 
-      {/* Menu */}
-      <nav className="mt-4 flex flex-col">
-        {menuItems.map((item) => (
-          <button
-            key={item.key}
-            onClick={() => navigate(item.key)}
-            className={`
-              w-full text-left px-6 py-3 hover:bg-slate-700 
-              ${location.pathname === item.key ? 'bg-slate-800' : ''}
-            `}
-          >
-            {item.label}
-          </button>
-        ))}
-      </nav>
-    </aside>
+      {/* SIDEBAR */}
+      <aside
+        ref={sidebarRef}
+        className={`
+          fixed top-0 left-0 h-full bg-slate-900 text-white z-40
+          transition-all duration-300 overflow-hidden
+          ${isMobile ? (open ? "w-64" : "w-0") : open ? "w-64" : "w-16"}
+        `}
+        onMouseLeave={() => {
+          if (!isMobile) onClose();
+        }}
+      >
+        {/* Header */}
+        <div
+          className="h-16 flex items-center px-4 border-b border-slate-700 text-lg font-bold"
+          style={{ whiteSpace: "nowrap" }}
+        >
+          {(!isMobile && open) || isMobile ? "MNMJEC ERP" : ""}
+        </div>
+
+        {/* Menu */}
+        <nav className="mt-3 flex flex-col">
+          {menuItems.map((item) => {
+            const active = location.pathname === item.key;
+
+            return (
+              <button
+                key={item.key}
+                onClick={() => {
+                  navigate(item.key);
+                  if (isMobile) onClose();
+                }}
+                className={`
+                  flex items-center gap-3 px-4 py-3 text-left
+                  hover:bg-slate-700 transition
+                  ${active ? "bg-slate-800" : ""}
+                `}
+              >
+                {/* Icon always visible */}
+                <span className="text-xl">{item.icon}</span>
+
+                {/* Label visible only when expanded */}
+                {((open && !isMobile) || isMobile) && (
+                  <span className="text-base">{item.label}</span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+    </>
   );
 }

@@ -76,7 +76,15 @@ export default function App() {
         />
       )}
 
-      <main className="pt-16 p-6 text-slate-800 dark:text-slate-100">
+      {/* <main className="pt-16 p-6 text-slate-800 dark:text-slate-100"> */}
+            <main
+              className={`
+          pt-16 p-6 text-slate-800 dark:text-slate-100
+          transition-all duration-300
+          ${window.innerWidth <= 768 ? "pl-0" : sidebarOpen ? "pl-64" : "pl-16"}
+        `}
+            >
+
         <Routes>
           {/* Public routes */}
           <Route path="/Erp_Mnmjec" element={<Navigate to="/Erp_Mnmjec/home" />} />

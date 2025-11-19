@@ -1,179 +1,214 @@
-import React, { useState } from 'react';
-import { Layout, Dropdown, Menu, Badge, Button } from 'antd';
-import { BellOutlined, UserOutlined, LogoutOutlined, DownOutlined, MenuOutlined } from '@ant-design/icons';
-import Login from './Login';
-import logo from '../assests/logo2.png';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-
-
-
+import React, { useState } from "react";
+import { Layout, Dropdown, Menu, Badge, Button } from "antd";
+import {
+  BellOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  DownOutlined,
+  MenuOutlined,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
+import Login from "./Login";
+import logo from "../assests/logo2.png";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 
-
-export default function PremiumHeader({ user, onLogin, onLogout, onMenuClick, onHamburgerClick }) {
+export default function PremiumHeader({
+  user,
+  onLogin,
+  onLogout,
+  onHamburgerClick,
+}) {
   const [showLogin, setShowLogin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-
 
   const handleLoginSuccess = (userData) => {
     onLogin(userData);
     setShowLogin(false);
   };
 
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
-  const handleLogoutClick = () => {
-    onLogout();
-  };
+  const handleBackClick = () => navigate(-1);
+  const handleLogoutClick = () => onLogout();
 
   const userMenu = (
     <Menu
       items={[
         {
-          key: 'logout',
-          label: 'Logout',
-          icon: <LogoutOutlined style={{ color: 'red' }} />,
+          key: "logout",
+          label: "Logout",
+          icon: <LogoutOutlined style={{ color: "red" }} />,
           onClick: handleLogoutClick,
         },
       ]}
     />
   );
 
-  const shouldShowLogin = showLogin && location.pathname !== '/forgotpassword';
-
+  const isMobile = window.innerWidth <= 768;
+  const shouldShowLogin =
+    showLogin && location.pathname !== "/forgotpassword";
 
   return (
     <>
       <Header
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 100,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0 24px',
           height: 64,
-          background: 'linear-gradient(90deg, #1c3faa, #3a7bd5)',
-          color: '#fff',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+          padding: "0 20px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "#1c3faa",
+          zIndex: 100,
+          boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+          color: "#fff",
         }}
       >
-        {/* Left: Logo / Brand / Menu Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Button
-            type="text"
-            icon={<ArrowLeftOutlined style={{ fontSize: 18, color: '#fff' }} />}
-            onClick={handleBackClick}
-            style={{
-              display: location.pathname === '/' ? 'none' : 'flex',
-              alignItems: 'center',
-              color: '#fff',
-              fontWeight: 600,
-            }}
-          >
+        {/* LEFT SECTION */}
+        <div
+          className="header-left"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+          }}
+        >
+          {/* Back Button */}
+          {location.pathname !== "/" && (
+            <Button
+              type="text"
+              onClick={handleBackClick}
+              icon={
+                <ArrowLeftOutlined style={{ color: "#fff", fontSize: 18 }} />
+              }
+            />
+          )}
 
-          </Button>
-
-
-
+          {/* Logo */}
           <Link to="/Erp_Mnmjec/home">
             <img
               src={logo}
-              alt="MNMJEC ERP Logo"
-              style={{ height: 40, width: "100%", cursor: 'pointer', backgroundColor: '#fff', padding: 4 }}
+              alt="MNMJEC"
+              style={{
+                height: 42,
+                width: "auto",
+                background: "#fff",
+                padding: 4,
+                borderRadius: 4,
+                cursor: "pointer",
+              }}
             />
           </Link>
-          {/* <Link to="/">
-            <img
-              src={logo}
-              alt="MNMJEC ERP Logo"
-              style={{ height: 60, cursor: 'pointer',  padding: 4 }}
-            />
-          </Link> */}
 
-          <Link to="/Erp_Mnmjec/home" style={{ textDecoration: 'none' }}>
-            <span style={{ fontWeight: 700, fontSize: 22, color: '#fff', cursor: 'pointer' }}>
+          {/* Title (hide on small screens) */}
+          <Link to="/Erp_Mnmjec/home" style={{ textDecoration: "none" }}>
+            <span
+              className="header-logo-text"
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                color: "#fff",
+              }}
+            >
               MNMJEC
             </span>
           </Link>
+
+          {/* Hamburger */}
           <Button
             type="text"
-            icon={<MenuOutlined style={{ fontSize: 20, color: '#fff' }} />}
-            onClick={onHamburgerClick}
-            onMouseEnter={onHamburgerClick}
+            icon={<MenuOutlined style={{ fontSize: 22, color: "#fff" }} />}
+            onClick={() => {
+              if (isMobile) onHamburgerClick();
+            }}
+            onMouseEnter={() => {
+              if (!isMobile) onHamburgerClick();
+            }}
           />
-
         </div>
 
-        {/* Right: Notifications + User */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* RIGHT SECTION */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 20,
+          }}
+        >
           {/* Notification */}
           <Badge dot>
-            <BellOutlined style={{ fontSize: 20, color: '#fff', cursor: 'pointer' }} />
+            <BellOutlined
+              style={{
+                fontSize: 20,
+                color: "#fff",
+                cursor: "pointer",
+              }}
+            />
           </Badge>
 
-          {/* User */}
+          {/* User Dropdown */}
           {user ? (
-            <Dropdown overlay={userMenu} trigger={['click']}>
+            <Dropdown overlay={userMenu} trigger={["click"]}>
               <Button
-                type="default"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   gap: 8,
                   fontWeight: 600,
-                  color: '#1c3faa',
-                  background: '#fff',
+                  color: "#1c3faa",
+                  background: "#fff",
                   borderRadius: 8,
-                  padding: '4px 12px',
-                  border: 'none',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  padding: "4px 12px",
+                  border: "none",
                 }}
               >
-                <UserOutlined style={{ fontSize: 16 }} />
-                <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <UserOutlined />
+                <span
+                  style={{
+                    maxWidth: 120,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    textTransform: "uppercase",
+                  }}
+                >
                   {user.name}
                 </span>
-                <DownOutlined style={{ fontSize: 12 }} />
+                <DownOutlined />
               </Button>
             </Dropdown>
           ) : (
             <Button
-              type="default"
               style={{
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 gap: 8,
                 fontWeight: 600,
-                color: '#1c3faa',
-                background: '#fff',
+                color: "#1c3faa",
+                background: "#fff",
                 borderRadius: 8,
-                padding: '4px 12px',
-                border: 'none',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                padding: "4px 12px",
+                border: "none",
               }}
               onClick={() => setShowLogin(true)}
             >
-              <UserOutlined style={{ fontSize: 16 }} />
+              <UserOutlined />
               Sign In
             </Button>
           )}
         </div>
       </Header>
 
-      {/* Login Modal */}
-      {shouldShowLogin && <Login onClose={() => setShowLogin(false)} onLoginSuccess={handleLoginSuccess} />}
+      {shouldShowLogin && (
+        <Login
+          onClose={() => setShowLogin(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
     </>
   );
 }
