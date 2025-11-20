@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -37,6 +38,10 @@ import FeesList from './pages/fees/FeesList';
 import Feesanalytics from './pages/fees/FeesAnalytics';
 import FeesAdd from './pages/fees/FeesAdd';
 
+import ProfileHub from './pages/sidebar/ProfileHub';
+import ProfileView from './pages/profilehub/ProfileView';
+import ProfileAdd from './pages/profilehub/ProfileAdd';
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -45,6 +50,34 @@ export default function App() {
     const storedUser = localStorage.getItem('user');
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const decoded = jwtDecode(token);
+
+      if (!decoded.sessionExpiry) return;
+
+      const remaining = decoded.sessionExpiry - Date.now();
+
+      if (remaining <= 0) {
+        handleLogout();
+        return;
+      }
+
+      const timer = setTimeout(() => {
+        handleLogout();
+      }, remaining);
+
+      return () => clearTimeout(timer);
+    } catch (err) {
+      console.error("Token decode error:", err);
+      handleLogout();
+    }
+  }, [user]);
+
 
   const handleLogin = (userData) => {
     localStorage.setItem('user', JSON.stringify(userData));
@@ -56,11 +89,14 @@ export default function App() {
     localStorage.removeItem('token');
     setUser(null);
     setSidebarOpen(false);
+    window.location.href = "/Erp_Mnmjec/home";
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 relative">
       <NetworkAlert />
+
+
       <Header
         user={user}
         onLogin={handleLogin}
@@ -76,14 +112,16 @@ export default function App() {
         />
       )}
 
+
+
       {/* <main className="pt-16 p-6 text-slate-800 dark:text-slate-100"> */}
-            <main
-              className={`
+      <main
+        className={`
           pt-16 p-6 text-slate-800 dark:text-slate-100
           transition-all duration-300
           ${window.innerWidth <= 768 ? "pl-0" : sidebarOpen ? "pl-64" : "pl-16"}
         `}
-            >
+      >
 
         <Routes>
           {/* Public routes */}
@@ -140,6 +178,12 @@ export default function App() {
                 <Route path="add" element={<FeesAdd user={user} />} />
               </Route>
 
+
+              <Route path="/Erp_Mnmjec/profilehub" element={<ProfileHub user={user} />}>
+                <Route path="add" element={<ProfileAdd />} />
+                <Route path="view" element={<ProfileView user={user} />} />
+                <Route index element={<ProfileView user={user} />} />
+              </Route>
 
               <Route path="*" element={<PageNotFound />} />
             </>

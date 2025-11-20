@@ -216,10 +216,26 @@ export default function AdminDashboard({ profileCard, announcements }) {
 
 
   return (
+
+
     <div className="p-6 min-h-screen bg-gray-50">
+      {/* Global Student Search */}
+      <div className="w-full flex justify-end mb-4">
+        <input
+          type="text"
+          placeholder="Search student by name or reg no…"
+          className="w-full sm:w-72 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400"
+          onChange={(e) => console.log("search", e.target.value)}
+        />
+      </div>
+
       <h1 className="text-3xl font-extrabold text-gray-900 mb-6">
         Administrator Dashboard
       </h1>
+
+      {/* Quick Actions */}
+    
+
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Profile */}

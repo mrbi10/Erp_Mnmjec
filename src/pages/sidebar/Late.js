@@ -61,7 +61,7 @@ export default function Late({ user }) {
             title: "Updated!",
             text: "Late entries have been refreshed.",
             icon: "success",
-            timer: 1200,
+            timer: 600,
             showConfirmButton: false,
             customClass: {
               confirmButton:
@@ -137,7 +137,7 @@ export default function Late({ user }) {
         </h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-gray-500">
-            Auto-refreshes every <strong>20s</strong>
+            Auto-refreshes every <strong>10s</strong>
           </span>
           <button
             onClick={() => fetchLateStudents(true)}

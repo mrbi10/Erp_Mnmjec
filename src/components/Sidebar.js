@@ -9,6 +9,7 @@ import {
   BarChartOutlined,
   TeamOutlined,
   SafetyCertificateOutlined,
+  UserAddOutlined
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -87,6 +88,12 @@ export default function Sidebar({ role, open, onClose }) {
       label: 'Security Entry',
       icon: <SafetyCertificateOutlined />,
       roles: ['Security'],
+    },
+    {
+      key: '/Erp_Mnmjec/profilehub',
+      label: 'Profile Hub',
+      icon: <UserAddOutlined />,
+      roles: ['Staff', 'Principal', 'student', 'CA', 'HOD'],
     },
   ];
 
