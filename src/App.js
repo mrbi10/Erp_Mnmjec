@@ -7,6 +7,7 @@ import Sidebar from './components/Sidebar';
 import ForgotPassword from './components/forgotpassword';
 import ResetPassword from './components/resetpassword';
 import NetworkAlert from './components/NetworkAlert';
+import AssistantButton from './components/AssistantButton';
 
 import Home from './pages/orthers/Home';
 import PageNotFound from './pages/orthers/PageNotFound';
@@ -14,6 +15,7 @@ import PageNotFound from './pages/orthers/PageNotFound';
 import Dashboard from './pages/sidebar/Dashboard';
 import Attendance from './pages/sidebar/Attendance';
 import Marks from './pages/sidebar/Marks';
+import Mess from './pages/sidebar/Mess';
 import Reports from './pages/sidebar/Reports';
 import Late from './pages/sidebar/Late';
 import SecurityLateEntry from './pages/sidebar/SecurityLateEntry';
@@ -93,8 +95,11 @@ export default function App() {
   };
 
   return (
+
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 relative">
+
       <NetworkAlert />
+
 
 
       <Header
@@ -140,6 +145,7 @@ export default function App() {
               <Route path="Erp_Mnmjec/reports" element={<Reports user={user} />} />
               <Route path="Erp_Mnmjec/marks" element={<Marks user={user} />} />
               <Route path="Erp_Mnmjec/late" element={<Late user={user} />} />
+              <Route path="Erp_Mnmjec/mess" element={<Mess user={user} />} />
               <Route path="Erp_Mnmjec/SecurityLateEntry" element={<SecurityLateEntry user={user} />} />
 
               {/* Attendance nested routes */}
@@ -207,6 +213,9 @@ export default function App() {
           <span className="opacity-70">· IV Year CSE, MNMJEC</span>
         </p>
       </footer>
+
+      {user && <AssistantButton user={user}/>}
+
 
     </div>
   );

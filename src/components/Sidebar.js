@@ -9,9 +9,10 @@ import {
   BarChartOutlined,
   TeamOutlined,
   SafetyCertificateOutlined,
-  UserAddOutlined
+  UserAddOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CookingPotIcon } from "lucide-react";
 
 export default function Sidebar({ role, open, onClose }) {
   const sidebarRef = useRef();
@@ -75,6 +76,12 @@ export default function Sidebar({ role, open, onClose }) {
       key: '/Erp_Mnmjec/late',
       label: 'Late Arrival',
       icon: <ClockCircleOutlined />,
+      roles: ['CA', 'HOD', 'Principal'],
+    },
+    {
+      key: '/Erp_Mnmjec/mess',
+      label: 'Mess',
+      icon: <CookingPotIcon />,
       roles: ['CA', 'HOD', 'Principal'],
     },
     {
