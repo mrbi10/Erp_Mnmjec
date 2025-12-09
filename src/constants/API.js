@@ -1,5 +1,5 @@
 // college
-// export const BASE_URL = "http://192.168.0.25:5000/api";
+// export const BASE_URL = "http://192.168.0.50:5000/api";
 // localhost
 export const BASE_URL = "http://localhost:5000/api";
 // Anna home

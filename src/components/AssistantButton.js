@@ -18,6 +18,35 @@ export default function AssistantButton({ user }) {
         }
     }, [messages, loading, open]);
 
+    useEffect(() => {
+    if (open) loadHistory();
+}, [open]);
+
+
+    const loadHistory = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${BASE_URL}/assistant/history`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        const formatted = data.messages.map(m => ({
+            role: m.role,
+            content: m.content,
+            time: new Date(m.created_at).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        }));
+
+        setMessages(formatted);
+    } catch (err) {
+        console.log("History load failed:", err);
+    }
+};
+
+
     // Helper to get current time
     const getTime = () => {
         return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

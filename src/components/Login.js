@@ -5,7 +5,8 @@ import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login({ onClose, onLoginSuccess }) {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -13,8 +14,8 @@ export default function Login({ onClose, onLoginSuccess }) {
   const [captchaInput, setCaptchaInput] = useState('');
 
   const navigate = useNavigate();
+  const DOMAIN = "@mnmjec.ac.in";
 
-  // Load captcha on mount
   const loadCaptcha = async () => {
     try {
       const res = await fetch(`${BASE_URL}/captcha`);
@@ -40,16 +41,17 @@ export default function Login({ onClose, onLoginSuccess }) {
       return;
     }
 
+    const finalEmail = username.includes("@") ? username : username + DOMAIN;
+
     try {
       const res = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...credentials,
+          email: finalEmail,
+          password,
           captchaId: captcha.id,
-          captchaText: captchaInput,
+          captchaText: captchaInput
         }),
       });
 
@@ -58,7 +60,7 @@ export default function Login({ onClose, onLoginSuccess }) {
       if (!res.ok) {
         setError(data.message || 'Login failed');
         setLoading(false);
-        loadCaptcha(); // refresh captcha on failure
+        loadCaptcha();
         setCaptchaInput("");
         return;
       }
@@ -70,19 +72,19 @@ export default function Login({ onClose, onLoginSuccess }) {
 
       onLoginSuccess(decoded);
       navigate('/Erp_Mnmjec');
-
     } catch (err) {
       console.error(err);
-      setError('Server unreachable. Please try again later.');
+      setError('Server unreachable. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-xl w-80 relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-xl w-80 relative animate-scaleIn">
 
+        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-slate-600 dark:text-slate-300 hover:text-slate-900"
@@ -90,7 +92,7 @@ export default function Login({ onClose, onLoginSuccess }) {
           <X size={18} />
         </button>
 
-        <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-100 text-center">
+        <h2 className="text-xl font-semibold mb-4 text-center text-slate-800 dark:text-slate-100">
           Sign In
         </h2>
 
@@ -102,40 +104,50 @@ export default function Login({ onClose, onLoginSuccess }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
+          {/* Username Input */}
           <div>
             <label className="block text-sm text-slate-700 dark:text-slate-300 mb-1">
-              Email
+              College Email
             </label>
-            <input
-              type="email"
-              value={credentials.email}
-              onChange={(e) =>
-                setCredentials({ ...credentials, email: e.target.value })
-              }
-              className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-md bg-transparent focus:ring-2 focus:ring-sky-500"
-              required
-            />
+
+            <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-md overflow-hidden">
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.trim())}
+                placeholder="yourname"
+                className="
+      w-full p-2 
+      bg-transparent
+      focus:outline-none
+      focus:ring-2 focus:ring-sky-500
+    "
+                required
+              />
+              <span className="px-2 text-sm text-slate-500 dark:text-slate-400">
+                {DOMAIN}
+              </span>
+            </div>
+
           </div>
 
+          {/* Password */}
           <div>
             <label className="block text-sm text-slate-700 dark:text-slate-300 mb-1">
               Password
             </label>
             <input
               type="password"
-              value={credentials.password}
-              onChange={(e) =>
-                setCredentials({ ...credentials, password: e.target.value })
-              }
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-md bg-transparent focus:ring-2 focus:ring-sky-500"
               required
             />
           </div>
 
-          {/* --- Captcha --- */}
+          {/* Captcha */}
           <div className="flex items-center justify-between">
             <div dangerouslySetInnerHTML={{ __html: captcha.image }} />
-
             <button
               type="button"
               onClick={loadCaptcha}
@@ -154,17 +166,16 @@ export default function Login({ onClose, onLoginSuccess }) {
             required
           />
 
-          {/* --- Submit Button --- */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded-md font-medium text-white ${
-              loading
+            className={`w-full py-2 rounded-md font-medium text-white transition ${loading
                 ? 'bg-sky-400 cursor-not-allowed'
                 : 'bg-sky-600 hover:bg-sky-700'
-            }`}
+              }`}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
 
