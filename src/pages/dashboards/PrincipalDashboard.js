@@ -1,136 +1,206 @@
 import React, { useEffect, useState } from "react";
-import { FaChartLine, FaUsers, FaChalkboardTeacher, FaGraduationCap } from "react-icons/fa";
+import { 
+  FaUserGraduate, 
+  FaChalkboardTeacher, 
+  FaBus, 
+  FaBuilding, 
+  FaRegStar, 
+  FaChartPie ,
+} from "react-icons/fa";
 import { AnnouncementsCard } from "./StudentDashboard";
 import { BASE_URL } from "../../constants/API";
 import Select from "react-select";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FaSpinner } from "react-icons/fa";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  Tooltip, 
+  ResponsiveContainer 
 } from "recharts";
+import { FaceSmileIcon } from "@heroicons/react/24/solid";
 
 // -----------------------------
-// Admin Stats Card
+// Component: Stat Pill (Micro-Interaction)
 // -----------------------------
-const AdminStatsCard = ({ overview }) => {
+const StatPill = ({ icon: Icon, label, value, total, colorClass, bgClass }) => (
+  <motion.div 
+    whileHover={{ scale: 1.02, y: -2 }}
+    className={`${bgClass} p-4 rounded-2xl flex items-center justify-between transition-all duration-300 border border-opacity-50 border-white shadow-sm`}
+  >
+    <div className="flex items-center gap-3">
+      <div className={`p-2.5 rounded-xl bg-white/60 backdrop-blur-md shadow-sm ${colorClass}`}>
+        <Icon className="text-lg" />
+      </div>
+      <div className="flex flex-col">
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</span>
+        <span className="text-sm font-medium text-gray-600">Total: {total}</span>
+      </div>
+    </div>
+    <div className="text-right">
+      <span className={`text-xl font-bold ${colorClass.replace("text-", "text-op-")}`}>
+        {value}
+      </span>
+      <span className="text-xs text-gray-400 block">Present</span>
+    </div>
+  </motion.div>
+);
+
+// -----------------------------
+// Component: Attendance Widget (The Hero)
+// -----------------------------
+const AttendanceWidget = ({ overview }) => {
   const total = overview?.total_students || 0;
   const present = overview?.present_today || 0;
   const absent = total - present;
   const percentage = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
 
-  const COLORS =
-    percentage >= 85
-      ? ["#22c55e", "#dcfce7"] // green
-      : percentage >= 70
-        ? ["#f59e0b", "#fef3c7"] // orange
-        : ["#ef4444", "#fee2e2"]; // red
-
-  const data = [
+  // Modern Apple-style palette
+  const COLORS = ["#10b981", "#f1f5f9"]; // Emerald & Slate-100
+  const CHART_DATA = [
     { name: "Present", value: present },
     { name: "Absent", value: absent },
   ];
 
   return (
-    <div className="p-5 sm:p-6 bg-white rounded-xl shadow-md sm:shadow-lg transition duration-300 hover:shadow-2xl">
-      {/* Header */}
-      <div className="flex items-center mb-4 border-b pb-2">
-        <FaChartLine className="text-xl sm:text-2xl text-red-600 mr-2 sm:mr-3" />
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800">
-          Attendance Overview
-        </h3>
-      </div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden"
+    >
+      {/* Decorative Background Blob */}
+      <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
-      {/* Stats & Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
-        {/* Text Stats */}
-        <div className="space-y-3 text-center lg:text-left">
-          <div>
-            <div className="text-xs sm:text-sm text-gray-500">
-              Total Students
+      <div className="relative z-10 flex flex-col lg:flex-row gap-8 items-center">
+        
+        {/* Left: Key Metrics */}
+        <div className="flex-1 w-full space-y-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-gray-50 rounded-lg border border-gray-200">
+              <FaChartPie className="text-gray-700" />
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-red-700">
-              {total}
-            </div>
-          </div>
-          <div>
-            <div className="text-xs sm:text-sm text-gray-500">
-              Present Today
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-red-700">
-              {present}
-            </div>
-          </div>
-          <div className="text-sm text-gray-600">
-            {percentage}% Attendance Today
-          </div>
-        </div>
-
-        {/* Additional Sub Stats */}
-        {/* Sub stats grid */}
-        <div className="grid grid-cols-3 gap-3 mt-6 text-center">
-          <div className="p-3 bg-green-50 rounded-lg">
-            <div className="text-xs text-gray-500">Jain</div>
-            <div className="text-lg font-bold text-green-700">
-              {overview?.jain_students?.present}/{overview?.jain_students?.total}
-            </div>
+            <h3 className="text-xl font-bold text-gray-800 tracking-tight">Daily Attendance</h3>
           </div>
 
-          <div className="p-3 bg-blue-50 rounded-lg">
-            <div className="text-xs text-gray-500">Hostel</div>
-            <div className="text-lg font-bold text-blue-700">
-              {overview?.hostel_students?.present}/{overview?.hostel_students?.total}
-            </div>
+          <div className="flex items-baseline gap-1">
+            <h2 className="text-5xl font-extrabold text-gray-900 tracking-tight">{percentage}%</h2>
+            <span className="text-gray-400 font-medium">Attendance Rate</span>
           </div>
 
-          <div className="p-3 bg-yellow-50 rounded-lg">
-            <div className="text-xs text-gray-500">College Bus</div>
-            <div className="text-lg font-bold text-yellow-700">
-              {overview?.bus_students?.present}/{overview?.bus_students?.total}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+              <p className="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Total Students</p>
+              <p className="text-2xl font-bold text-gray-900">{total}</p>
+            </div>
+            <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/50">
+              <p className="text-xs text-emerald-600 uppercase font-semibold tracking-wide mb-1">Present Today</p>
+              <p className="text-2xl font-bold text-emerald-700">{present}</p>
             </div>
           </div>
         </div>
 
-        {/* Pie Chart */}
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
+        {/* Center: Donut Chart */}
+        <div className="w-full lg:w-48 h-48 relative flex items-center justify-center">
+           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data}
+                data={CHART_DATA}
                 dataKey="value"
-                nameKey="name"
-                innerRadius={50}
-                outerRadius={70}
-                paddingAngle={4}
+                innerRadius={60}
+                outerRadius={80}
+                startAngle={90}
+                endAngle={-270}
+                paddingAngle={0}
+                stroke="none"
               >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                ))}
+                <Cell fill="#10b981" /> {/* Present */}
+                <Cell fill="#f1f5f9" /> {/* Absent */}
               </Pie>
-              <Tooltip
-                contentStyle={{
-                  borderRadius: "8px",
-                  border: "none",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                }}
+              <Tooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                itemStyle={{ fontSize: '12px', fontWeight: '600' }}
               />
             </PieChart>
-
-
           </ResponsiveContainer>
+          {/* Inner Text */}
+          <div className="absolute text-center">
+            <span className="block text-2xl font-bold text-gray-800">{present}</span>
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Active</span>
+          </div>
+        </div>
 
+        {/* Right: Sub Stats (Bento Grid) */}
+        <div className="flex-1 w-full grid grid-cols-1 gap-3">
+           <StatPill 
+             icon={FaRegStar} 
+             label="Jain Students" 
+             value={overview?.jain_students?.present} 
+             total={overview?.jain_students?.total}
+             bgClass="bg-orange-50/50"
+             colorClass="text-orange-600"
+           />
+           <StatPill 
+             icon={FaBuilding} 
+             label="Hostel" 
+             value={overview?.hostel_students?.present} 
+             total={overview?.hostel_students?.total}
+             bgClass="bg-blue-50/50"
+             colorClass="text-blue-600"
+           />
+           <StatPill 
+             icon={FaBus} 
+             label="College Bus" 
+             value={overview?.bus_students?.present} 
+             total={overview?.bus_students?.total}
+             bgClass="bg-yellow-50/50"
+             colorClass="text-yellow-600"
+           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 // -----------------------------
-// Admin Dashboard
+// Component: Action Button (Glass Card)
+// -----------------------------
+const ActionCard = ({ to, icon: Icon, title, subtitle, color }) => {
+  const colors = {
+    blue: "from-blue-500 to-blue-600 shadow-blue-200",
+    purple: "from-purple-500 to-purple-600 shadow-purple-200",
+  };
+
+  return (
+    <Link to={to || "#"} className="block h-full">
+      <motion.div 
+        whileHover={{ y: -5, scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className={`relative h-full overflow-hidden rounded-3xl p-6 bg-white border border-gray-100 shadow-xl shadow-gray-200/50 group cursor-pointer`}
+      >
+        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${colors[color]} opacity-10 rounded-full blur-3xl transform translate-x-10 -translate-y-10 group-hover:opacity-20 transition-opacity`}></div>
+        
+        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors[color]} flex items-center justify-center text-white mb-4 shadow-lg`}>
+          <Icon className="text-2xl" />
+        </div>
+        
+        <h3 className="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">{title}</h3>
+        <p className="text-sm text-gray-500 font-medium">{subtitle}</p>
+        
+        {/* Arrow indicator */}
+        <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+            <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+        </div>
+      </motion.div>
+    </Link>
+  );
+};
+
+// -----------------------------
+// Main Dashboard
 // -----------------------------
 export default function AdminDashboard({ profileCard, announcements }) {
   const [overview, setOverview] = useState(null);
@@ -138,191 +208,202 @@ export default function AdminDashboard({ profileCard, announcements }) {
   const [selectedClass, setSelectedClass] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Fetch class list
+  // Fetch Logic (Kept mostly same, just cleaner hooks)
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${BASE_URL}/classes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setClasses(data);
+        const headers = { Authorization: `Bearer ${token}` };
+        
+        const classRes = await fetch(`${BASE_URL}/classes`, { headers });
+        const classData = await classRes.json();
+        setClasses(classData);
       } catch (err) {
-        console.error("Error fetching class list:", err);
+        console.error(err);
       }
     };
-    fetchClasses();
+    fetchData();
   }, []);
 
-  // Fetch overview stats
   useEffect(() => {
-    const fetchOverview = async () => {
+    const fetchStats = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const token = localStorage.getItem("token");
         const url = selectedClass
           ? `${BASE_URL}/admin/overview?classId=${selectedClass}`
           : `${BASE_URL}/admin/overview`;
-
-        const res = await fetch(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
         setOverview(data);
       } catch (err) {
-        console.error("Error fetching admin overview:", err);
+        console.error(err);
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 500); // Artificial delay for smoothness
       }
     };
-    fetchOverview();
+    fetchStats();
   }, [selectedClass]);
 
-  const DEPT_MAP = {
-    1: "CSE",
-    2: "ECE",
-    3: "EEE",
-    4: "MECH",
-    5: "CIVIL",
-    6: "IT",
+  const DEPT_MAP = { 1: "CSE", 2: "ECE", 3: "EEE", 4: "MECH", 5: "CIVIL", 6: "IT" };
+
+  // Custom Styles for React Select (Apple Style)
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      borderRadius: "16px",
+      padding: "4px 8px",
+      borderColor: state.isFocused ? "#3b82f6" : "transparent",
+      backgroundColor: "#ffffff",
+      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+      border: "1px solid #f3f4f6",
+      "&:hover": { borderColor: "#cbd5e1" },
+      minHeight: "48px",
+      fontSize: "0.95rem",
+      fontWeight: "500"
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? "#3b82f6" : state.isFocused ? "#eff6ff" : "white",
+      color: state.isSelected ? "white" : "#1e293b",
+      cursor: "pointer",
+      padding: "10px 14px",
+    }),
+    singleValue: (base) => ({
+        ...base,
+        color: "#334155",
+        fontWeight: "600"
+    }),
+    placeholder: (base) => ({
+        ...base,
+        color: "#94a3b8"
+    })
   };
 
-
-
-
-  if (loading) {
+  // Loading State
+  if (loading && !overview) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 animate-pulse">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50/50 backdrop-blur-3xl">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="mb-4"
+          animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full"
+        />
+        <motion.p 
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          className="mt-4 text-gray-400 font-medium tracking-wide text-sm"
         >
-          <FaSpinner className="text-5xl text-blue-600 dark:text-blue-400" />
-        </motion.div>
-
-        <motion.h2
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, repeat: Infinity, repeatType: "reverse" }}
-          className="text-lg font-semibold tracking-wide"
-        >
-          Loading Principal Dashboard...
-        </motion.h2>
+          Syncing Dashboard...
+        </motion.p>
       </div>
     );
   }
 
-
   return (
+    <div className="min-h-screen bg-[#F8FAFC] text-gray-800 font-sans selection:bg-blue-100 selection:text-blue-900 pb-12">
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        
+        {/* Header Section */}
+        <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
+        >
+            <div>
+                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Principal Overview</h1>
+            </div>
 
-
-    <div className="p-6 min-h-screen bg-gray-50">
-      {/* Global Student Search */}
-      <div className="w-full flex justify-end mb-4">
-        <input
-          type="text"
-          placeholder="Search student by name or reg no…"
-          className="w-full sm:w-72 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400"
-          onChange={(e) => console.log("search", e.target.value)}
-        />
-      </div>
-
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-6">
-        Administrator Dashboard
-      </h1>
-
-      {/* Quick Actions */}
-    
-
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Profile */}
-        <div className="lg:col-span-1">{profileCard}</div>
-
-        {/* Overview + Class Filter */}
-        <div className="lg:col-span-3">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-700">Filter by Class</h2>
-            <div className="lg:col-span-3">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
-                <h2 className="font-semibold text-gray-700">Filter by Class</h2>
-                <div className="w-full sm:w-64">
-                  <Select
+            {/* Class Filter Dropdown */}
+            <div className="w-full md:w-72 relative z-50">
+                <Select
                     options={[
-                      { value: "", label: "All Classes" },
-                      ...classes.map((c) => ({
-                        value: c.class_id,
-                        label: `Year ${c.year} - ${DEPT_MAP[c.dept_id] || "CSE"}`,
-                      })),
+                        { value: "", label: "All Departments" },
+                        ...classes.map((c) => ({
+                            value: c.class_id,
+                            label: `Year ${c.year} • ${DEPT_MAP[c.dept_id] || "GEN"}`,
+                        })),
                     ]}
                     value={
                       selectedClass
                         ? {
-                          value: selectedClass,
-                          label:
-                            classes.find((cls) => cls.class_id === selectedClass)?.year
-                              ? `Year ${classes.find((cls) => cls.class_id === selectedClass)
-                                ?.year
-                              } - ${DEPT_MAP[
-                              classes.find((cls) => cls.class_id === selectedClass)
-                                ?.dept_id
-                              ] || "CSE"
-                              }`
+                            value: selectedClass,
+                            label: classes.find((c) => c.class_id === selectedClass)
+                              ? `Year ${classes.find((c) => c.class_id === selectedClass).year} • ${DEPT_MAP[classes.find((c) => c.class_id === selectedClass).dept_id]}`
                               : "Select Class",
-                        }
-                        : { value: "", label: "All Classes" }
+                          }
+                        : null
                     }
                     onChange={(option) => setSelectedClass(option?.value || "")}
-                    className="text-sm"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        borderRadius: "0.5rem",
-                        borderColor: "#d1d5db",
-                        boxShadow: "none",
-                        "&:hover": { borderColor: "#9ca3af" },
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isFocused ? "#f3f4f6" : "white",
-                        color: "#111827",
-                      }),
-                    }}
+                    styles={selectStyles}
+                    placeholder="Filter by Class..."
                     isSearchable
-                  />
+                />
+            </div>
+        </motion.div>
+
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Left Column (Profile + Actions) */}
+            <div className="lg:col-span-3 space-y-6">
+                <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    {profileCard}
+                </motion.div>
+
+                <div className="grid grid-cols-1 gap-4">
+                    <ActionCard 
+                        to="/Erp_Mnmjec/faculty" 
+                        icon={FaChalkboardTeacher} 
+                        title="Faculty" 
+                        subtitle="Manage Staff" 
+                        color="blue" 
+                    />
+                    <ActionCard 
+                        to="/Erp_Mnmjec/students" 
+                        icon={FaUserGraduate} 
+                        title="Students" 
+                        subtitle="Manage Students" 
+                        color="blue" 
+                    />
                 </div>
-              </div>
             </div>
 
-          </div>
+            {/* Middle/Right Column (Stats + Announcements) */}
+            <div className="lg:col-span-9 space-y-8">
+                
+                {/* 1. Main Stats Widget */}
+                <AnimatePresence mode="wait">
+                    {!loading && (
+                        <AttendanceWidget overview={overview} />
+                    )}
+                </AnimatePresence>
 
-          <AdminStatsCard overview={overview} />
+                {/* 2. Announcements & Secondary Data */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="grid grid-cols-2 lg:grid-cols-1 gap-8"
+                >
+                    {/* Announcements Wrapper with Glass styling */}
+                    <div className="bg-white rounded-3xl p-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 h-full">
+                        <div className="p-5 border-b border-gray-100 flex justify-between items-center">
+                             <h3 className="font-bold text-lg text-gray-800">Notice Board</h3>
+                             {/* <Link to="/notices" className="text-sm font-semibold text-blue-500 hover:text-blue-600">View All</Link> */}
+                        </div>
+                        <div className="p-2">
+                             <AnnouncementsCard announcements={announcements} />
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
         </div>
-
-        {/* Announcements */}
-        <div className="lg:col-span-2">
-          <AnnouncementsCard announcements={announcements} />
-        </div>
-
-        {/* Admin Tools */}
-        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-          <Link
-            to="/Erp_Mnmjec/faculty"
-            className="p-6 bg-blue-100 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-blue-200 transition transform hover:scale-105 cursor-pointer"
-          >
-            <FaChalkboardTeacher className="text-4xl text-blue-700 mb-2" />
-            <span className="font-semibold text-blue-800">Manage Faculty</span>
-          </Link>
-
-          <div className="p-6 bg-purple-100 rounded-xl shadow-md flex flex-col items-center justify-center hover:bg-purple-200 transition transform hover:scale-105 cursor-pointer">
-            <FaGraduationCap className="text-4xl text-purple-700 mb-2" />
-            <span className="font-semibold text-purple-800">System Setup</span>
-          </div>
-        </div>
-
-
       </div>
     </div>
   );

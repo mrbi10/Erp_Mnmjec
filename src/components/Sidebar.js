@@ -58,7 +58,7 @@ export default function Sidebar({ role, open, onClose }) {
       key: '/Erp_Mnmjec/attendance',
       label: 'Attendance',
       icon: <CheckCircleOutlined />,
-      roles: ['Staff', 'student', 'CA', 'HOD'],
+      roles: ['Staff', 'student', 'CA','Principal', 'HOD'],
     },
     {
       key: '/Erp_Mnmjec/marks',
@@ -84,12 +84,12 @@ export default function Sidebar({ role, open, onClose }) {
       icon: <CookingPotIcon />,
       roles: ['CA', 'HOD', 'Principal'],
     },
-    {
-      key: '/Erp_Mnmjec/reports',
-      label: 'Reports',
-      icon: <BarChartOutlined />,
-      roles: ['CA', 'HOD', 'Principal'],
-    },
+    // {
+    //   key: '/Erp_Mnmjec/reports',
+    //   label: 'Reports',
+    //   icon: <BarChartOutlined />,
+    //   roles: ['CA', 'HOD', 'Principal'],
+    // },
     {
       key: '/Erp_Mnmjec/SecurityLateEntry',
       label: 'Security Entry',

@@ -12,9 +12,30 @@ export default function Login({ onClose, onLoginSuccess }) {
 
   const [captcha, setCaptcha] = useState({ id: '', image: '' });
   const [captchaInput, setCaptchaInput] = useState('');
+  const [usernameWarning, setUsernameWarning] = useState('');
+
 
   const navigate = useNavigate();
   const DOMAIN = "@mnmjec.ac.in";
+
+  const handleUsernameChange = (e) => {
+    let value = e.target.value;
+
+    if (value.includes("@mnmjec.ac.in")) {
+      value = value.replace("@mnmjec.ac.in", "");
+      setUsernameWarning("Don't type @mnmjec.ac.in — just enter your username.");
+    }
+    else if (value.includes("@")) {
+      value = value.replace("@", "");
+      setUsernameWarning("Remove the @ symbol. Only enter your username.");
+    }
+    else {
+      setUsernameWarning("");
+    }
+
+    setUsername(value.trim());
+  };
+
 
   const loadCaptcha = async () => {
     try {
@@ -41,7 +62,9 @@ export default function Login({ onClose, onLoginSuccess }) {
       return;
     }
 
-    const finalEmail = username.includes("@") ? username : username + DOMAIN;
+const finalEmail = username.includes("@")
+  ? username.trim()
+  : username.trim() + DOMAIN;
 
     try {
       const res = await fetch(`${BASE_URL}/login`, {
@@ -105,31 +128,28 @@ export default function Login({ onClose, onLoginSuccess }) {
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Username Input */}
-          <div>
-            <label className="block text-sm text-slate-700 dark:text-slate-300 mb-1">
-              College Email
-            </label>
+         <div>
+  <label className="block text-sm text-slate-700 dark:text-slate-300 mb-1">
+    Username / College Mail ID
+  </label>
 
-            <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-md overflow-hidden">
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value.trim())}
-                placeholder="yourname"
-                className="
+  <input
+    type="text"
+    value={username}
+    onChange={(e) => setUsername(e.target.value)}
+    placeholder="Enter Username / College Mail ID "
+    className="
       w-full p-2 
-      bg-transparent
+      border border-slate-300 dark:border-slate-700
+      rounded-md bg-transparent
       focus:outline-none
       focus:ring-2 focus:ring-sky-500
     "
-                required
-              />
-              <span className="px-2 text-sm text-slate-500 dark:text-slate-400">
-                {DOMAIN}
-              </span>
-            </div>
+    required
+  />
+</div>
 
-          </div>
+
 
           {/* Password */}
           <div>
@@ -171,8 +191,8 @@ export default function Login({ onClose, onLoginSuccess }) {
             type="submit"
             disabled={loading}
             className={`w-full py-2 rounded-md font-medium text-white transition ${loading
-                ? 'bg-sky-400 cursor-not-allowed'
-                : 'bg-sky-600 hover:bg-sky-700'
+              ? 'bg-sky-400 cursor-not-allowed'
+              : 'bg-sky-600 hover:bg-sky-700'
               }`}
           >
             {loading ? 'Signing in…' : 'Sign In'}

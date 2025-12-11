@@ -117,8 +117,6 @@ export default function App() {
         />
       )}
 
-
-
       {/* <main className="pt-16 p-6 text-slate-800 dark:text-slate-100"> */}
       <main
         className={`
@@ -134,7 +132,7 @@ export default function App() {
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/resetpassword/:token" element={<ResetPassword />} />
           <Route path="Erp_Mnmjec/home" element={<Home user={user} />} />
-
+          <Route path="/" element={<Home user={user} />} />
 
           {/* Protected routes */}
           {user && (
@@ -214,7 +212,7 @@ export default function App() {
         </p>
       </footer>
 
-      {user && <AssistantButton user={user}/>}
+      {user && <AssistantButton user={user} />}
 
 
     </div>

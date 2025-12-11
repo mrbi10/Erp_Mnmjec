@@ -36,7 +36,7 @@ export default function ProfileCard({ profileData }) {
                 <div>
                     <div className="text-xl font-extrabold text-gray-900">{profileData.name}</div>
                     <div className="text-sm text-gray-500">
-                        {profileData.regNo || profileData.employeeId || "ID: -"}
+                        {profileData.regNo || profileData.employeeId }
                     </div>
                 </div>
             </div>
