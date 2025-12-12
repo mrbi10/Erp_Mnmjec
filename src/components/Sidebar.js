@@ -12,7 +12,8 @@ import {
   UserAddOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CookingPotIcon } from "lucide-react";
+import { CookingPotIcon, Speaker, SpeakerIcon } from "lucide-react";
+import { FaSpeakerDeck } from "react-icons/fa";
 
 export default function Sidebar({ role, open, onClose }) {
   const sidebarRef = useRef();
@@ -58,7 +59,7 @@ export default function Sidebar({ role, open, onClose }) {
       key: '/Erp_Mnmjec/attendance',
       label: 'Attendance',
       icon: <CheckCircleOutlined />,
-      roles: ['Staff', 'student', 'CA','Principal', 'HOD'],
+      roles: ['Staff', 'student', 'CA', 'Principal', 'HOD'],
     },
     {
       key: '/Erp_Mnmjec/marks',
@@ -82,7 +83,13 @@ export default function Sidebar({ role, open, onClose }) {
       key: '/Erp_Mnmjec/mess',
       label: 'Mess',
       icon: <CookingPotIcon />,
-      roles: ['CA', 'HOD', 'Principal'],
+      roles: ['Principal'],
+    },
+    {
+      key: '/Erp_Mnmjec/announcement',
+      label: 'Announcement',
+      icon: <Speaker />,
+      roles: ['CA', 'student', 'HOD', 'Principal'],
     },
     // {
     //   key: '/Erp_Mnmjec/reports',

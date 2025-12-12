@@ -18,6 +18,7 @@ import Marks from './pages/sidebar/Marks';
 import Mess from './pages/sidebar/Mess';
 import Reports from './pages/sidebar/Reports';
 import Late from './pages/sidebar/Late';
+import Announcement from './pages/sidebar/Announcement';
 import SecurityLateEntry from './pages/sidebar/SecurityLateEntry';
 import Fees from './pages/sidebar/Fees';
 
@@ -120,10 +121,10 @@ export default function App() {
       {/* <main className="pt-16 p-6 text-slate-800 dark:text-slate-100"> */}
       <main
         className={`
-          pt-16 p-6 text-slate-800 dark:text-slate-100
-          transition-all duration-300
-          ${window.innerWidth <= 768 ? "pl-0" : sidebarOpen ? "pl-64" : "pl-16"}
-        `}
+    pt-24 p-6 text-slate-800 dark:text-slate-100
+    transition-all duration-300
+    ${window.innerWidth <= 768 ? "pl-0" : sidebarOpen ? "pl-64" : "pl-16"}
+  `}
       >
 
         <Routes>
@@ -181,6 +182,9 @@ export default function App() {
                 <Route path="analytics" element={<Feesanalytics user={user} />} />
                 <Route path="add" element={<FeesAdd user={user} />} />
               </Route>
+
+              <Route path="Erp_Mnmjec/announcement" element={<Announcement user={user} />} />
+
 
 
               <Route path="/Erp_Mnmjec/profilehub" element={<ProfileHub user={user} />}>

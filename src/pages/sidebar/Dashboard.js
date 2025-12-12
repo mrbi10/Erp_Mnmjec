@@ -255,6 +255,8 @@ export default function EnhancedDashboard({ user }) {
   // Common profile card
   const profileCard = <ProfileCard profileData={profile} />;
 
+  console.log(profileData);
+
   switch (user.role) {
     case "student":
       return (
@@ -269,6 +271,7 @@ export default function EnhancedDashboard({ user }) {
           fees={fees}
           library={library}
           messMenu={messMenu}
+          token={token}
         />
       );
 

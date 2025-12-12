@@ -26,6 +26,13 @@ import { motion, AnimatePresence } from "framer-motion";
 // ---------------------------
 const DEPT_MAP = { 1: "CSE", 2: "ECE", 3: "EEE", 4: "MECH", 5: "CIVIL", 6: "IT" };
 const ROMAN_MAP = { 1: "I", 2: "II", 3: "III", 4: "IV" };
+const YEAR_MAP = {
+  1: "I",
+  2: "II",
+  3: "III",
+  4: "IV"
+};
+
 
 const getInitials = (name) => {
   const parts = name?.split(" ") || [];
@@ -176,7 +183,7 @@ export default function Students({ user }) {
         // Fetch Classes based on Role
         let classUrl = `${BASE_URL}/classes`;
         if (user.role === "HOD") classUrl += `?dept_id=${user.dept_id}`;
-        else if (user.role === "CA") classUrl = `${BASE_URL}/classes/${user.assigned_class_id}`;
+        else if (user.role === "CA") classUrl = `${BASE_URL}/classes/${user.assigned_class_id}/students`;
 
         const classRes = await fetch(classUrl, { headers: { Authorization: `Bearer ${token}` } });
         const classData = await classRes.json();
@@ -437,7 +444,7 @@ export default function Students({ user }) {
               <span className="p-2 bg-blue-100 rounded-xl text-blue-600"><FaUserGraduate className="text-xl" /></span>
               {user.role === "Principal" ? "Students Overview" : "My Students"}
             </h1>
-            <p className="text-slate-500 mt-1 font-medium ml-1">Manage attendance and student details</p>
+            <p className="text-slate-500 mt-1 font-medium ml-1">Manage student details</p>
           </div>
           <button
             onClick={handleOpenAdd}
@@ -551,9 +558,11 @@ export default function Students({ user }) {
               <table className="w-full">
                 <thead className="bg-gray-50/50 border-b border-gray-100">
                   <tr>
-                    {["Student", "Reg No", "Class", "Contact", "category", "Actions"].map(h => (
-                      <th key={h} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{h}</th>
-                    ))}
+                    {["Student", "Reg No", "Class",
+                      // "Mobile", 
+                      "Email", "Category", "Actions"].map(h => (
+                        <th key={h} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{h}</th>
+                      ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -581,17 +590,27 @@ export default function Students({ user }) {
 
                         <td className="px-6 py-4 text-sm font-medium text-gray-600 font-mono">{s.roll_no || "-"}</td>
 
+                        {/* CLASS Badge */}
                         <td className="px-6 py-4">
-                          <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold border border-gray-200 whitespace-nowrap">
-                            {DEPT_MAP[s.dept_id]} • {ROMAN_MAP[classes.find(c => c.class_id === s.class_id)?.year] || "-"}
-                          </span>
+                          {(() => {
+                            const dept = DEPT_MAP[s.dept_id];
+                            const year = YEAR_MAP[s.class_id]; 
+
+                            if (!dept && !year) return null;
+
+                            return (
+                              <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold border border-gray-200 whitespace-nowrap">
+                                {dept && year ? `${dept} • ${year}` : dept || year}
+                              </span>
+                            );
+                          })()}
                         </td>
 
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col gap-1">
 
-                            {/* Icons Row */}
-                            <div className="flex gap-2">
+                        {/* MOBILE COLUMN
+                        <td className="px-6 py-4">
+                          {s.mobile ? (
+                            <div className="flex items-center gap-2">
                               <a
                                 href={`tel:${s.mobile}`}
                                 className="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
@@ -599,7 +618,17 @@ export default function Students({ user }) {
                               >
                                 <FaPhoneAlt className="text-xs" />
                               </a>
+                              <span className="text-xs text-gray-600 font-medium">{s.mobile}</span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
+                        </td> */}
 
+                        {/* EMAIL COLUMN */}
+                        <td className="px-6 py-4">
+                          {s.email ? (
+                            <div className="flex items-center gap-2">
                               <a
                                 href={`mailto:${s.email}`}
                                 className="p-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors"
@@ -607,20 +636,12 @@ export default function Students({ user }) {
                               >
                                 <FaEnvelope className="text-xs" />
                               </a>
+                              <span className="text-xs text-gray-600 font-medium">{s.email}</span>
                             </div>
-
-                            {/* Show mobile or email text IF available */}
-                            {(s.mobile || s.email) && (
-                              <span className="text-xs text-gray-500 font-medium mt-1">
-                                {s.mobile && <span>{s.mobile}</span>}
-                                {s.mobile && s.email && <span className="mx-1">•</span>}
-                                {s.email && <span>{s.email}</span>}
-                              </span>
-                            )}
-
-                          </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
                         </td>
-
 
                         {/* Status Icons */}
                         <td className="px-6 py-4">
