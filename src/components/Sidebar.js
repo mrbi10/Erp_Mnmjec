@@ -12,8 +12,10 @@ import {
   UserAddOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CookingPotIcon, Speaker, SpeakerIcon } from "lucide-react";
+import { CalculatorIcon, Calendar1Icon, CalendarRangeIcon, CookingPotIcon, Megaphone, Mic, Mic2Icon, Speaker, SpeakerIcon } from "lucide-react";
 import { FaSpeakerDeck } from "react-icons/fa";
+import { SpeakerWaveIcon } from "@heroicons/react/24/solid";
+import { Calendar } from "antd";
 
 export default function Sidebar({ role, open, onClose }) {
   const sidebarRef = useRef();
@@ -62,6 +64,18 @@ export default function Sidebar({ role, open, onClose }) {
       roles: ['Staff', 'student', 'CA', 'Principal', 'HOD'],
     },
     {
+      key: '/Erp_Mnmjec/timetable',
+      label: 'Time Table',
+      icon: <CalendarRangeIcon />,
+      roles: ['CA','HOD', 'Principal'],
+    },
+     {
+      key: '/Erp_Mnmjec/StudentTimetable',
+      label: 'Time Table',
+      icon: <CalendarRangeIcon />,
+      roles: ['student'],
+    },
+    {
       key: '/Erp_Mnmjec/marks',
       label: 'Marks',
       icon: <FileDoneOutlined />,
@@ -88,9 +102,10 @@ export default function Sidebar({ role, open, onClose }) {
     {
       key: '/Erp_Mnmjec/announcement',
       label: 'Announcement',
-      icon: <Speaker />,
+      icon: <Megaphone />,
       roles: ['CA', 'student', 'HOD', 'Principal'],
     },
+
     // {
     //   key: '/Erp_Mnmjec/reports',
     //   label: 'Reports',

@@ -1,31 +1,76 @@
 import React, { useEffect, useState } from "react";
-import { 
-  FaUserGraduate, 
-  FaChalkboardTeacher, 
-  FaBus, 
-  FaBuilding, 
-  FaRegStar, 
-  FaChartPie ,
+import {
+  FaUserGraduate,
+  FaChalkboardTeacher,
+  FaBus,
+  FaBuilding,
+  FaRegStar,
+  FaChartPie,
 } from "react-icons/fa";
 import { AnnouncementsCard } from "./StudentDashboard";
 import { BASE_URL } from "../../constants/API";
 import Select from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  Tooltip, 
-  ResponsiveContainer 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer
 } from "recharts";
 import { FaceSmileIcon } from "@heroicons/react/24/solid";
+import PrincipalOverview from "../marks/PrincipalOverview";
+
+
+const ProfileCard = ({ profile }) => {
+  if (!profile) return null;
+
+  const roleStyle = {
+    Principal: "bg-sky-100 text-sky-700",
+  }[profile.role] || "bg-gray-100 text-gray-700";
+
+  return (
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.25 }}
+      className="bg-white rounded-2xl border border-gray-100 shadow-lg p-5"
+    >
+      {/* Avatar + Name */}
+      <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white text-lg font-bold">
+          {profile.name?.charAt(0)}
+        </div>
+
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold text-gray-900 truncate">
+            {profile.name}
+          </h2>
+          <p className="text-xs text-gray-500 truncate">
+            {profile.email}
+          </p>
+        </div>
+      </div>
+
+      {/* Role / Designation */}
+      <div className="mt-4">
+        <span
+          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold capitalize ${roleStyle}`}
+        >
+          {profile.designation || profile.role}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
+
 
 // -----------------------------
 // Component: Stat Pill (Micro-Interaction)
 // -----------------------------
 const StatPill = ({ icon: Icon, label, value, total, colorClass, bgClass }) => (
-  <motion.div 
+  <motion.div
     whileHover={{ scale: 1.02, y: -2 }}
     className={`${bgClass} p-4 rounded-2xl flex items-center justify-between transition-all duration-300 border border-opacity-50 border-white shadow-sm`}
   >
@@ -64,7 +109,7 @@ const AttendanceWidget = ({ overview }) => {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -74,7 +119,7 @@ const AttendanceWidget = ({ overview }) => {
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
       <div className="relative z-10 flex flex-col lg:flex-row gap-8 items-center">
-        
+
         {/* Left: Key Metrics */}
         <div className="flex-1 w-full space-y-6">
           <div className="flex items-center gap-3 mb-2">
@@ -103,7 +148,7 @@ const AttendanceWidget = ({ overview }) => {
 
         {/* Center: Donut Chart */}
         <div className="w-full lg:w-48 h-48 relative flex items-center justify-center">
-           <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={CHART_DATA}
@@ -118,7 +163,7 @@ const AttendanceWidget = ({ overview }) => {
                 <Cell fill="#10b981" /> {/* Present */}
                 <Cell fill="#f1f5f9" /> {/* Absent */}
               </Pie>
-              <Tooltip 
+              <Tooltip
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 itemStyle={{ fontSize: '12px', fontWeight: '600' }}
               />
@@ -133,30 +178,30 @@ const AttendanceWidget = ({ overview }) => {
 
         {/* Right: Sub Stats (Bento Grid) */}
         <div className="flex-1 w-full grid grid-cols-1 gap-3">
-           <StatPill 
-             icon={FaRegStar} 
-             label="Jain Students" 
-             value={overview?.jain_students?.present} 
-             total={overview?.jain_students?.total}
-             bgClass="bg-orange-50/50"
-             colorClass="text-orange-600"
-           />
-           <StatPill 
-             icon={FaBuilding} 
-             label="Hostel" 
-             value={overview?.hostel_students?.present} 
-             total={overview?.hostel_students?.total}
-             bgClass="bg-blue-50/50"
-             colorClass="text-blue-600"
-           />
-           <StatPill 
-             icon={FaBus} 
-             label="College Bus" 
-             value={overview?.bus_students?.present} 
-             total={overview?.bus_students?.total}
-             bgClass="bg-yellow-50/50"
-             colorClass="text-yellow-600"
-           />
+          <StatPill
+            icon={FaRegStar}
+            label="Jain Students"
+            value={overview?.jain_students?.present}
+            total={overview?.jain_students?.total}
+            bgClass="bg-orange-50/50"
+            colorClass="text-orange-600"
+          />
+          <StatPill
+            icon={FaBuilding}
+            label="Hostel"
+            value={overview?.hostel_students?.present}
+            total={overview?.hostel_students?.total}
+            bgClass="bg-blue-50/50"
+            colorClass="text-blue-600"
+          />
+          <StatPill
+            icon={FaBus}
+            label="College Bus"
+            value={overview?.bus_students?.present}
+            total={overview?.bus_students?.total}
+            bgClass="bg-yellow-50/50"
+            colorClass="text-yellow-600"
+          />
         </div>
       </div>
     </motion.div>
@@ -174,25 +219,25 @@ const ActionCard = ({ to, icon: Icon, title, subtitle, color }) => {
 
   return (
     <Link to={to || "#"} className="block h-full">
-      <motion.div 
+      <motion.div
         whileHover={{ y: -5, scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         className={`relative h-full overflow-hidden rounded-3xl p-6 bg-white border border-gray-100 shadow-xl shadow-gray-200/50 group cursor-pointer`}
       >
         <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${colors[color]} opacity-10 rounded-full blur-3xl transform translate-x-10 -translate-y-10 group-hover:opacity-20 transition-opacity`}></div>
-        
+
         <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors[color]} flex items-center justify-center text-white mb-4 shadow-lg`}>
           <Icon className="text-2xl" />
         </div>
-        
+
         <h3 className="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">{title}</h3>
         <p className="text-sm text-gray-500 font-medium">{subtitle}</p>
-        
+
         {/* Arrow indicator */}
         <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-            <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
+          <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
         </div>
       </motion.div>
     </Link>
@@ -202,11 +247,13 @@ const ActionCard = ({ to, icon: Icon, title, subtitle, color }) => {
 // -----------------------------
 // Main Dashboard
 // -----------------------------
-export default function AdminDashboard({ profileCard, announcements }) {
+export default function AdminDashboard({ profileCard, profileData, announcements }) {
   const [overview, setOverview] = useState(null);
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
   const [loading, setLoading] = useState(true);
+
+
 
   // Fetch Logic (Kept mostly same, just cleaner hooks)
   useEffect(() => {
@@ -214,7 +261,7 @@ export default function AdminDashboard({ profileCard, announcements }) {
       try {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
-        
+
         const classRes = await fetch(`${BASE_URL}/classes`, { headers });
         const classData = await classRes.json();
         setClasses(classData);
@@ -233,7 +280,7 @@ export default function AdminDashboard({ profileCard, announcements }) {
         const url = selectedClass
           ? `${BASE_URL}/admin/overview?classId=${selectedClass}`
           : `${BASE_URL}/admin/overview`;
-        
+
         const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
         setOverview(data);
@@ -271,13 +318,13 @@ export default function AdminDashboard({ profileCard, announcements }) {
       padding: "10px 14px",
     }),
     singleValue: (base) => ({
-        ...base,
-        color: "#334155",
-        fontWeight: "600"
+      ...base,
+      color: "#334155",
+      fontWeight: "600"
     }),
     placeholder: (base) => ({
-        ...base,
-        color: "#94a3b8"
+      ...base,
+      color: "#94a3b8"
     })
   };
 
@@ -290,7 +337,7 @@ export default function AdminDashboard({ profileCard, announcements }) {
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full"
         />
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="mt-4 text-gray-400 font-medium tracking-wide text-sm"
         >
@@ -302,107 +349,104 @@ export default function AdminDashboard({ profileCard, announcements }) {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-gray-800 font-sans selection:bg-blue-100 selection:text-blue-900 pb-12">
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        
-        {/* Header Section */}
-        <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
-        >
-            <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Principal Overview</h1>
-            </div>
 
-            {/* Class Filter Dropdown */}
-            <div className="w-full md:w-72 relative z-50">
-                <Select
-                    options={[
-                        { value: "", label: "All Departments" },
-                        ...classes.map((c) => ({
-                            value: c.class_id,
-                            label: `Year ${c.year} • ${DEPT_MAP[c.dept_id] || "GEN"}`,
-                        })),
-                    ]}
-                    value={
-                      selectedClass
-                        ? {
-                            value: selectedClass,
-                            label: classes.find((c) => c.class_id === selectedClass)
-                              ? `Year ${classes.find((c) => c.class_id === selectedClass).year} • ${DEPT_MAP[classes.find((c) => c.class_id === selectedClass).dept_id]}`
-                              : "Select Class",
-                          }
-                        : null
-                    }
-                    onChange={(option) => setSelectedClass(option?.value || "")}
-                    styles={selectStyles}
-                    placeholder="Filter by Class..."
-                    isSearchable
-                />
-            </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+        {/* Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
+        >
+          <div>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Principal Overview</h1>
+          </div>
+
+          {/* Class Filter Dropdown */}
+          <div className="w-full md:w-72 relative z-50">
+            <Select
+              options={[
+                { value: "", label: "All Departments" },
+                ...classes.map((c) => ({
+                  value: c.class_id,
+                  label: `Year ${c.year} • ${DEPT_MAP[c.dept_id] || "GEN"}`,
+                })),
+              ]}
+              value={
+                selectedClass
+                  ? {
+                    value: selectedClass,
+                    label: classes.find((c) => c.class_id === selectedClass)
+                      ? `Year ${classes.find((c) => c.class_id === selectedClass).year} • ${DEPT_MAP[classes.find((c) => c.class_id === selectedClass).dept_id]}`
+                      : "Select Class",
+                  }
+                  : null
+              }
+              onChange={(option) => setSelectedClass(option?.value || "")}
+              styles={selectStyles}
+              placeholder="Filter by Class..."
+              isSearchable
+            />
+          </div>
         </motion.div>
 
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Left Column (Profile + Actions) */}
-            <div className="lg:col-span-3 space-y-6">
-                <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                >
-                    {profileCard}
-                </motion.div>
 
-                <div className="grid grid-cols-1 gap-4">
-                    <ActionCard 
-                        to="/Erp_Mnmjec/faculty" 
-                        icon={FaChalkboardTeacher} 
-                        title="Faculty" 
-                        subtitle="Manage Staff" 
-                        color="blue" 
-                    />
-                    <ActionCard 
-                        to="/Erp_Mnmjec/students" 
-                        icon={FaUserGraduate} 
-                        title="Students" 
-                        subtitle="Manage Students" 
-                        color="blue" 
-                    />
-                </div>
+          {/* Left Column (Profile + Actions) */}
+          <div className="lg:col-span-3 space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <ProfileCard profile={profileData} />
+            </motion.div>
+
+            <div className="grid grid-cols-1 gap-4">
+              <ActionCard
+                to="/Erp_Mnmjec/faculty"
+                icon={FaChalkboardTeacher}
+                title="Faculty"
+                subtitle="Manage Staff"
+                color="blue"
+              />
+              <ActionCard
+                to="/Erp_Mnmjec/students"
+                icon={FaUserGraduate}
+                title="Students"
+                subtitle="Manage Students"
+                color="blue"
+              />
             </div>
+          </div>
 
-            {/* Middle/Right Column (Stats + Announcements) */}
-            <div className="lg:col-span-9 space-y-8">
-                
-                {/* 1. Main Stats Widget */}
-                <AnimatePresence mode="wait">
-                    {!loading && (
-                        <AttendanceWidget overview={overview} />
-                    )}
-                </AnimatePresence>
+          {/* Middle/Right Column (Stats + Announcements) */}
+          <div className="lg:col-span-9 space-y-8">
 
-                {/* 2. Announcements & Secondary Data */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="grid grid-cols-2 lg:grid-cols-1 gap-8"
-                >
-                    {/* Announcements Wrapper with Glass styling */}
-                    <div className="bg-white rounded-3xl p-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 h-full">
-                        <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-                             <h3 className="font-bold text-lg text-gray-800">Notice Board</h3>
-                             {/* <Link to="/notices" className="text-sm font-semibold text-blue-500 hover:text-blue-600">View All</Link> */}
-                        </div>
-                        <div className="p-2">
-                             <AnnouncementsCard announcements={announcements} />
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
+            {/* 1. Main Stats Widget */}
+            <AnimatePresence mode="wait">
+              {!loading && (
+                <AttendanceWidget overview={overview} />
+              )}
+            </AnimatePresence>
+
+            {/* 2. Announcements & Secondary Data */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="grid grid-cols-2 lg:grid-cols-1 gap-8"
+            >
+              {/* Announcements Wrapper with Glass styling */}
+              <div className="p-2">
+                <AnnouncementsCard
+                  announcements={announcements}
+                />
+
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>

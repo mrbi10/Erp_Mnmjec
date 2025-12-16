@@ -21,6 +21,9 @@ import Late from './pages/sidebar/Late';
 import Announcement from './pages/sidebar/Announcement';
 import SecurityLateEntry from './pages/sidebar/SecurityLateEntry';
 import Fees from './pages/sidebar/Fees';
+import Timetable from './pages/sidebar/Timetable';
+import StudentTimetable from './pages/sidebar/StudentTimetable';
+
 
 import Students from './pages/students/Students';
 import FacultyList from './pages/faculty/FacultyList';
@@ -145,6 +148,9 @@ export default function App() {
               <Route path="Erp_Mnmjec/marks" element={<Marks user={user} />} />
               <Route path="Erp_Mnmjec/late" element={<Late user={user} />} />
               <Route path="Erp_Mnmjec/mess" element={<Mess user={user} />} />
+              <Route path="Erp_Mnmjec/announcement" element={<Announcement user={user} />} />
+              <Route path="Erp_Mnmjec/timetable" element={<Timetable user={user} />} />
+              <Route path="Erp_Mnmjec/StudentTimetable" element={<StudentTimetable user={user} />} />
               <Route path="Erp_Mnmjec/SecurityLateEntry" element={<SecurityLateEntry user={user} />} />
 
               {/* Attendance nested routes */}
@@ -182,9 +188,6 @@ export default function App() {
                 <Route path="analytics" element={<Feesanalytics user={user} />} />
                 <Route path="add" element={<FeesAdd user={user} />} />
               </Route>
-
-              <Route path="Erp_Mnmjec/announcement" element={<Announcement user={user} />} />
-
 
 
               <Route path="/Erp_Mnmjec/profilehub" element={<ProfileHub user={user} />}>

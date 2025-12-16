@@ -154,7 +154,7 @@ export default function AnnouncementsPage({ user }) {
             confirmButtonColor: "#ef4444",
             cancelButtonColor: "#e5e7eb",
             confirmButtonText: "Yes, delete it!",
-            customClass: { container: 'z-9999' } // Ensure Swal is above all other elements
+            customClass: { container: 'z-9999' } 
         });
 
         if (!confirm.isConfirmed) return;

@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FaBook, FaCalendarAlt, FaUtensils, FaArrowRight, FaCheckCircle, FaExclamationCircle, FaClock, FaEnvelopeOpenText, FaFileDownload, FaGraduationCap, FaMoneyBillAlt, FaBell } from "react-icons/fa";
+import { FaBook, FaCalendarAlt, FaUtensils, FaSyncAlt, FaArrowRight, FaCheckCircle, FaExclamationCircle, FaClock, FaEnvelopeOpenText, FaFileDownload, FaGraduationCap, FaMoneyBillAlt, FaBell } from "react-icons/fa";
 import { Bar, Line } from "react-chartjs-2";
-import Select from "react-select";
-import axios from "axios";
 import { BASE_URL } from "../../constants/API";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 
-// --- Design Tokens (Consistent Styling) ---
 const CARD_CLASSES = "p-6 bg-white rounded-2xl border border-gray-100 shadow-xl transition duration-500 hover:shadow-2xl hover:border-sky-200 h-full flex flex-col";
 const HEADER_ICON_COLOR = "text-sky-600";
 const HEADER_TEXT_CLASSES = "text-xl font-semibold text-gray-800 tracking-tight";
@@ -14,7 +13,6 @@ const SUBHEADER_TEXT_CLASSES = "text-sm text-gray-500 font-light";
 const ACCENT_COLOR_CLASSES = "text-sky-600 font-bold";
 const PRIMARY_BUTTON_CLASSES = "px-4 py-2 bg-sky-600 text-white font-medium rounded-xl hover:bg-sky-700 transition duration-300 shadow-md";
 
-// UTILITY FUNCTION
 const formatTime = (time) => {
     const [h, m] = time.split(":");
     const hour = parseInt(h);
@@ -22,6 +20,9 @@ const formatTime = (time) => {
     const formattedHour = hour % 12 || 12;
     return `${formattedHour}:${m}`;
 };
+
+
+
 const formatdatetime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN', {
@@ -35,7 +36,6 @@ const formatdatetime = (dateString) => {
     });
 }
 
-// 1. ATTENDANCE CARD (Restyled for Minimalism)
 const AttendanceCard = ({ profileData, token }) => {
     const [studentData, setStudentData] = useState([]);
 
@@ -57,9 +57,7 @@ const AttendanceCard = ({ profileData, token }) => {
     }, [profileData?.regNo, token]);
 
 
-    //--------------------------------------------------------
-    // CUMULATIVE DAILY PERCENTAGES (MAIN CHART)
-    //--------------------------------------------------------
+
 
     const cumulativeTrend = useMemo(() => {
         if (!studentData.length) return [];
@@ -80,14 +78,10 @@ const AttendanceCard = ({ profileData, token }) => {
                 date: new Date(record.date).toLocaleDateString(),
                 pct: Number(pct.toFixed(2))
             };
-        }).slice(-15); // keep only last 15 days
+        }).slice(-15);
     }, [studentData]);
 
 
-
-    //--------------------------------------------------------
-    // Overall percent (from cumulative)
-    //--------------------------------------------------------
 
     const overallPercentage = cumulativeTrend.length
         ? cumulativeTrend[cumulativeTrend.length - 1].pct
@@ -98,10 +92,6 @@ const AttendanceCard = ({ profileData, token }) => {
             : overallPercentage >= 50 ? "bg-yellow-500"
                 : "bg-red-500";
 
-
-    //--------------------------------------------------------
-    // Chart data
-    //--------------------------------------------------------
 
     const lineData = {
         labels: cumulativeTrend.map(d => d.date),
@@ -134,9 +124,6 @@ const AttendanceCard = ({ profileData, token }) => {
     };
 
 
-    //--------------------------------------------------------
-    // Recent 5 logs
-    //--------------------------------------------------------
 
     const recentStatus = useMemo(() => {
         return [...studentData]
@@ -145,14 +132,9 @@ const AttendanceCard = ({ profileData, token }) => {
     }, [studentData]);
 
 
-    //--------------------------------------------------------
-    // UI
-    //--------------------------------------------------------
-
     return (
         <div className="bg-white shadow-lg rounded-2xl p-6 flex flex-col h-full border border-gray-100">
 
-            {/* Header */}
             <div className="flex justify-between items-start mb-6">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800">Attendance Analytics</h3>
@@ -165,12 +147,10 @@ const AttendanceCard = ({ profileData, token }) => {
                 </div>
             </div>
 
-            {/* Chart */}
             <div className="h-56 mb-6">
                 <Line data={lineData} options={chartOptions} />
             </div>
 
-            {/* Button */}
             <button
                 onClick={() => window.location.href = "#/Erp_Mnmjec/attendance/view"}
                 className="w-full py-2 bg-sky-600 text-white rounded-xl mb-4 hover:bg-sky-700 transition"
@@ -185,7 +165,6 @@ const AttendanceCard = ({ profileData, token }) => {
 
 
 
-// 2. MESS MENU CARD (Restyled for Minimalism)
 const MessMenuCard = ({ messMenu, isJain }) => {
     const [selectedDay, setSelectedDay] = useState(
         new Date().toLocaleDateString("en-US", { weekday: "long" })
@@ -243,7 +222,6 @@ const MessMenuCard = ({ messMenu, isJain }) => {
     );
 };
 
-// 3. PERFORMANCE CARD (Restyled for Minimalism)
 const PerformanceCard = ({ performance }) => {
     const lineData = useMemo(() => ({
         labels: (performance?.subjects || []).map((s) => s.name.split(' ').map(w => w.charAt(0)).join('')), // Use initials
@@ -252,7 +230,7 @@ const PerformanceCard = ({ performance }) => {
                 label: "Marks",
                 data: (performance?.subjects || []).map((s) => s.marks),
                 fill: false,
-                borderColor: '#1d4ed8', // Dark Blue for professional look (indigo-700)
+                borderColor: '#1d4ed8',
                 backgroundColor: 'rgba(29, 78, 216, 0.1)',
                 tension: 0.4,
                 pointBackgroundColor: '#1d4ed8',
@@ -327,7 +305,8 @@ const PerformanceCard = ({ performance }) => {
     );
 };
 
-// 4. TIMETABLE CARD (Restyled for Minimalism)
+
+
 const TimetableCard = ({ timetableToday }) => {
     const todayClasses = timetableToday || [];
 
@@ -335,7 +314,6 @@ const TimetableCard = ({ timetableToday }) => {
         if (!timeString) return null;
         const [h, m, s] = timeString.split(":").map(Number);
         const date = new Date();
-        // Reset date parts to today's date
         date.setHours(h, m, s, 0);
         return date;
     };
@@ -363,10 +341,8 @@ const TimetableCard = ({ timetableToday }) => {
         }
     };
 
-    // Find the next upcoming or currently ongoing class
     const nextClass = useMemo(() => {
         const now = new Date();
-        // First check for ongoing class
         const ongoing = todayClasses.find((cls) => {
             const startTime = getTimeAsDate(cls.startTime);
             const endTime = getTimeAsDate(cls.endTime);
@@ -375,7 +351,6 @@ const TimetableCard = ({ timetableToday }) => {
 
         if (ongoing) return ongoing;
 
-        // Then check for the next upcoming class
         const upcoming = todayClasses.find((cls) => {
             const classTime = getTimeAsDate(cls.startTime);
             return classTime && classTime > now;
@@ -398,10 +373,12 @@ const TimetableCard = ({ timetableToday }) => {
                         <p className={SUBHEADER_TEXT_CLASSES}>{new Date().toDateString()}</p>
                     </div>
                 </div>
-                <div className="text-right flex flex-col items-end">
-                    <div className="text-sm text-gray-700">Next Class:</div>
-                    <div className={`text-2xl font-extrabold ${nextClassCountdown === "LIVE" ? 'text-green-600' : ACCENT_COLOR_CLASSES}`}>
-                        {nextClassCountdown}
+                <div className="text-right flex flex-col items-end gap-2">
+                    <div>
+                        <div className="text-sm text-gray-700">Next Class:</div>
+                        <div className={`text-2xl font-extrabold ${nextClassCountdown === "LIVE" ? 'text-green-600' : ACCENT_COLOR_CLASSES}`}>
+                            {nextClassCountdown}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -437,35 +414,90 @@ const TimetableCard = ({ timetableToday }) => {
                     })}
                 </ul>
             )}
+            <button
+                onClick={() => window.location.href = "#/Erp_Mnmjec/Studenttimetable"}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+            >
+                View Full Timetable
+            </button>
         </div>
     );
 }
 
-// 5. ANNOUNCEMENTS CARD (Restyled for Minimalism)
-export const AnnouncementsCard = ({ announcements }) => (
-    <div className={CARD_CLASSES}>
-        <div className="flex items-center mb-6 border-b pb-3">
-            <FaBell className="text-2xl text-red-500 mr-3" />
-            <h3 className={HEADER_TEXT_CLASSES}>Latest Announcements</h3>
+export const AnnouncementsCard = ({
+    announcements,
+    onRefresh,
+    refreshing = false,
+}) => (
+    <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.06)] overflow-hidden">
+
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                    <FaBell className="text-red-500 text-lg" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 tracking-tight">
+                    Latest Announcements
+                </h3>
+            </div>
+
+            <div className="flex items-center gap-4">
+                <button
+                    onClick={onRefresh}
+                    disabled={refreshing}
+                    title="Refresh announcements"
+                    className="p-2 rounded-lg hover:bg-gray-100 transition disabled:opacity-50"
+                >
+                    <FaSyncAlt
+                        className={`text-gray-500 ${refreshing ? "animate-spin" : ""
+                            }`}
+                    />
+                </button>
+
+                <Link
+                    to="/Erp_Mnmjec/announcement"
+                    className="text-sm font-semibold text-red-500 hover:text-red-600 flex items-center gap-1"
+                >
+                    View all
+                    <FaArrowRight className="text-xs" />
+                </Link>
+            </div>
         </div>
-        <ul className="space-y-3 max-h-80 overflow-y-auto pr-2 flex-grow">
-            {(announcements || []).slice(0, 5).map((a) => (
-                <li key={a.id || a.title} className="p-3 bg-red-50 rounded-xl border-l-4 border-red-300 transition duration-150 hover:bg-red-100 shadow-sm">
-                    <div className="flex justify-between items-start">
-                        <div className="pr-2">
-                            <div className="font-semibold text-red-800 text-sm">{a.title}</div>
-                            <div className="text-sm mt-1 text-gray-700 font-light">{a.message}</div>
-                            <div className="text-xs text-red-500 mt-2">{formatdatetime(a.created_at)}</div>
-                        </div>
-                    </div>
-                </li>
-            ))}
-        </ul>
-        {(announcements || []).length === 0 && <p className="text-gray-500 text-sm p-4 text-center bg-gray-50 rounded-xl mt-3">No new announcements.</p>}
+
+        <div className="px-5 py-4">
+            {(announcements || []).length > 0 ? (
+                <ul className="space-y-4 max-h-80 overflow-y-auto pr-2">
+                    {announcements.slice(0, 5).map((a, i) => (
+                        <motion.li
+                            key={a.id || i}
+                            whileHover={{ y: -2 }}
+                            transition={{ duration: 0.2 }}
+                            className="p-4 rounded-2xl bg-gradient-to-br from-red-50 to-white border border-red-100 hover:border-red-200 shadow-sm"
+                        >
+                            <p className="font-semibold text-gray-900 text-sm">
+                                {a.title}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                                {a.message}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-2">
+                                {formatdatetime(a.created_at)}
+                            </p>
+                        </motion.li>
+                    ))}
+                </ul>
+            ) : (
+                <div className="text-center text-sm text-gray-500 bg-gray-50 rounded-xl py-6">
+                    No new announcements
+                </div>
+            )}
+        </div>
+
+
     </div>
 );
 
-// 6. ASSIGNMENTS CARD (Restyled for Minimalism)
+
 export const AssignmentsCard = ({ assignments }) => (
     <div className={CARD_CLASSES}>
         <div className="flex items-center mb-6 border-b pb-3">
@@ -489,7 +521,6 @@ export const AssignmentsCard = ({ assignments }) => (
     </div>
 );
 
-// 7. FEES CARD (Restyled for Minimalism)
 const FeesCard = ({ fees }) => {
     if (!fees) return <div className={CARD_CLASSES}><p className="text-center text-gray-500">Fees data loading...</p></div>;
 
@@ -502,13 +533,11 @@ const FeesCard = ({ fees }) => {
 
     return (
         <div className={CARD_CLASSES}>
-            {/* Header */}
             <div className="flex items-center mb-6 border-b pb-3">
                 <FaMoneyBillAlt className="text-2xl text-teal-600 mr-3" />
                 <h3 className={HEADER_TEXT_CLASSES}>Fee Status</h3>
             </div>
 
-            {/* Main Balance Display (Focus/Apple Style) */}
             <div className={`p-5 rounded-2xl border ${statusColor} text-center mb-6 shadow-lg`}>
                 <div className="text-sm font-medium text-gray-600">{balanceText}</div>
                 <div className="font-extrabold text-4xl sm:text-5xl my-1">
@@ -519,7 +548,6 @@ const FeesCard = ({ fees }) => {
                 </div> */}
             </div>
 
-            {/* Details */}
             <div className="grid grid-cols-2 gap-3 text-sm flex-grow">
                 <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
                     <div className="text-xs text-gray-500">Total Paid</div>
@@ -536,7 +564,6 @@ const FeesCard = ({ fees }) => {
                 </div>
             </div>
 
-            {/* Remarks */}
             {fees.remarks && fees.remarks.trim() && (
                 <div className="mt-4 p-3 bg-gray-100 rounded-xl text-sm text-gray-700">
                     <span className="font-semibold text-gray-800">Note:</span> {fees.remarks}
@@ -565,71 +592,91 @@ const FeesCard = ({ fees }) => {
 };
 
 
-// Main Student Dashboard Component (Refactored Layout)
+
 export default function StudentDashboard({
     profileData,
     profileCard,
-    attendanceSummary,
     performance,
     timetableToday,
-    announcements,
     assignments,
     fees,
     messMenu,
     token
 }) {
+    const [announcements, setAnnouncements] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const fetchAnnouncements = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${BASE_URL}/announcements`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            setAnnouncements(data || []);
+        } catch (err) {
+            console.error(err);
+            setAnnouncements([]);
+        }
+    };
+
+    const refreshAnnouncements = async () => {
+        try {
+            setRefreshing(true);
+            await fetchAnnouncements();
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAnnouncements();
+    }, []);
+
     return (
         <div className="p-4 sm:p-8 min-h-screen bg-gray-100 font-sans">
-            {/* Main Dashboard Container */}
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-4xl font-extrabold text-gray-900 mb-8 tracking-tighter">
-                   <span className={ACCENT_COLOR_CLASSES}>Student</span> dashboard 
+                    <span className={ACCENT_COLOR_CLASSES}>Student</span> dashboard
                 </h1>
 
-                {/* 1. Profile (Full Width) */}
                 <div className="mb-8">
-                    {/* Assuming profileCard is a pre-rendered component/element passed in */}
                     {React.cloneElement(profileCard, {
                         className: `p-6 bg-white rounded-2xl border border-gray-100 shadow-xl transition duration-500 hover:shadow-2xl h-full flex flex-col ${profileCard.props.className}`
                     })}
                 </div>
 
-                {/* 2. Primary Metrics: Timetable, Attendance (Reinstated), Mess Menu, Performance */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
-                    {/* Timetable - Col Span 2 */}
                     <div className="lg:col-span-2">
                         <TimetableCard timetableToday={timetableToday} />
                     </div>
 
-                    {/* Attendance - Col Span 2 */}
                     <div className="lg:col-span-2">
                         <AttendanceCard profileData={profileData} token={token} />
                     </div>
 
-                    {/* Mess Menu - Col Span 2 */}
                     <div className="lg:col-span-2">
                         <MessMenuCard messMenu={messMenu} isJain={profileData?.jain === 1} />
                     </div>
 
-                    {/* Performance - Col Span 2 */}
                     <div className="lg:col-span-2">
                         <PerformanceCard performance={performance} />
                     </div>
                 </div>
 
-                {/* 3. Secondary/Action Items: Announcements, Assignments, Fees */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Announcements */}
                     <div>
-                        <AnnouncementsCard announcements={announcements} />
+                        <AnnouncementsCard
+                            announcements={announcements}
+                            onRefresh={refreshAnnouncements}
+                            refreshing={refreshing}
+                        />
                     </div>
 
-                    {/* Assignments */}
-                    <div>
+                    {/* <div>
                         <AssignmentsCard assignments={assignments} />
-                    </div>
+                    </div> */}
 
-                    {/* Fees */}
                     <div>
                         <FeesCard fees={fees} />
                     </div>
