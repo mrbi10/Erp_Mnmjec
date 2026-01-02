@@ -18,13 +18,12 @@ export default function Login({ onClose, onLoginSuccess }) {
   const [captchaInput, setCaptchaInput] = useState("");
 
   const navigate = useNavigate();
-  const DOMAIN = "@mnmjec.ac.in";
 
   const userRoleIcon = () => {
     const email = username.toLowerCase();
 
-    if (email.includes("principal")) return <Shield size={20} className="text-amber-500" />;
-    if (email.includes("hod")) return <Briefcase size={20} className="text-blue-500" />;
+    if (email.includes("pri")) return <Shield size={20} className="text-amber-500" />;
+    if (email.includes("ho")) return <Briefcase size={20} className="text-blue-500" />;
     if (email.includes("faculty")) return <User size={20} className="text-emerald-500" />;
     if (email.includes("ca")) return <Phone size={20} className="text-purple-500" />;
     return <GraduationCap size={20} className="text-sky-500" />;
@@ -44,9 +43,7 @@ export default function Login({ onClose, onLoginSuccess }) {
     loadCaptcha();
   }, []);
 
-  const finalEmail = username.includes("@")
-    ? username.trim()
-    : username.trim() + DOMAIN;
+  const finalEmail = username.trim();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,11 +60,11 @@ export default function Login({ onClose, onLoginSuccess }) {
       const payload = otpMode
         ? { email: finalEmail, otp }
         : {
-            email: finalEmail,
-            password,
-            captchaId: captcha.id,
-            captchaText: captchaInput,
-          };
+          email: finalEmail,
+          password,
+          captchaId: captcha.id,
+          captchaText: captchaInput,
+        };
 
       const url = otpMode ? `${BASE_URL}/login-otp` : `${BASE_URL}/login`;
 
@@ -132,7 +129,7 @@ export default function Login({ onClose, onLoginSuccess }) {
         border border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.15)]
         animate-scaleIn
       ">
-        
+
         {/* Close */}
         <button
           onClick={onClose}
@@ -141,7 +138,7 @@ export default function Login({ onClose, onLoginSuccess }) {
           <X size={20} />
         </button>
 
-    
+
 
         {/* Error */}
         {error && (
@@ -156,23 +153,30 @@ export default function Login({ onClose, onLoginSuccess }) {
           {/* Username */}
           <div>
             <label className="text-sm text-slate-600 dark:text-slate-300 mb-1 block">
-              Username / College Email
+              Email or Register Number
             </label>
 
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.trim())}
-              placeholder="yourname"
-              className="
-                w-full px-4 py-2.5 rounded-xl
-                border border-slate-300 dark:border-slate-700
-                bg-white/70 dark:bg-slate-800/40
-                focus:ring-2 focus:ring-sky-500 outline-none transition-all
-                autofill:bg-transparent
-              "
-            />
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                {userRoleIcon()}
+              </div>
+
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Email or Register Number"
+                autoComplete="username"
+                className="
+        w-full pl-10 pr-4 py-2.5 rounded-xl
+        border border-slate-300 dark:border-slate-700
+        bg-white/70 dark:bg-slate-800/40
+        focus:ring-2 focus:ring-sky-500 outline-none transition-all
+      "
+              />
+            </div>
           </div>
+
 
           {/* Password (Hide for OTP mode) */}
           {!otpMode && (
